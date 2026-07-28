@@ -9,7 +9,7 @@ REM Distributed under the GNU GPL v 3.0 License
 :: -----------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/k mode con: cols=120 lines=30 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/k mode con: cols=120 lines=50 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
     exit /b
 )
 
