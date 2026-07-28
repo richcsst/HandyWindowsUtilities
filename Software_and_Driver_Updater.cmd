@@ -1,4 +1,5 @@
 @echo off
+chcp 437 >nul
 
 REM Quick Windows 11 Update Utility to update software and drivers without third-party utilities
 REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
@@ -13,15 +14,12 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.01"
+set "VERSION=1.00"
 
 :: -----------------------------------------------------
-:: ANSI Escape Initialization & OSC 8 Hyperlink Setup
+:: ANSI Escape Initialization & 16-Color Palette Setup
 :: -----------------------------------------------------
 for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
-
-:: Define BEL character (0x07) for clean OSC 8 termination
-for /f "delims=" %%a in ('powershell -NoProfile -ExecutionPolicy Bypass -Command "[char]7"') do set "BEL=%%a"
 
 :: Reset
 set "RESET=%ESC%[0m"
@@ -61,14 +59,13 @@ set "BG_BRIGHT_BLACK=%ESC%[100m"
 set "BG_BRIGHT_RED=%ESC%[101m"
 set "BG_BRIGHT_GREEN=%ESC%[102m"
 set "BG_BRIGHT_YELLOW=%ESC%[103m"
-set "BG_BRIGHT_BLUE=%ESC%[104m"
 set "BG_BRIGHT_MAGENTA=%ESC%[105m"
 set "BG_BRIGHT_CYAN=%ESC%[106m"
 set "BG_BRIGHT_WHITE=%ESC%[107m"
 
-:: Clickable Hyperlink Variable (OSC 8 Sequence)
+:: Clickable Hyperlink Variable (Pure CMD OSC 8 Escape Sequence)
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
-set "URL_LINK=%ESC%]8;;%REPO_URL%%BEL%%MAGENTA%%REPO_URL%%RESET%%ESC%]8;;%BEL%"
+set "URL_LINK=%ESC%]8;;%REPO_URL%%ESC%\%MAGENTA%%REPO_URL%%RESET%%ESC%]8;;%ESC%\"
 
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
 
