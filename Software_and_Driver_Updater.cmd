@@ -5,11 +5,11 @@ REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilitie
 REM Distributed under the GNU GPL v 3.0 License
 
 :: -----------------------------------------------------
-:: Check for Administrative Privileges
+:: Check for Administrative Privileges & Enforce Minimum Size (120x30)
 :: -----------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/k mode con: cols=120 lines=30 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
     exit /b
 )
 
