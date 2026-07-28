@@ -23,7 +23,7 @@ for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1)
 :: Reset
 set "RESET=%ESC%[0m"
 
-:: 8 Standard Foreground Colors
+:: 8 Standard Foreground Colors (30-37)
 set "BLACK=%ESC%[30m"
 set "RED=%ESC%[31m"
 set "GREEN=%ESC%[32m"
@@ -33,7 +33,7 @@ set "MAGENTA=%ESC%[35m"
 set "CYAN=%ESC%[36m"
 set "WHITE=%ESC%[37m"
 
-:: 8 Bright / High-Intensity Foreground Colors
+:: 8 Bright / High-Intensity Foreground Colors (1;30 - 1;37)
 set "BRIGHT_BLACK=%ESC%[1;30m"
 set "BRIGHT_RED=%ESC%[1;31m"
 set "BRIGHT_GREEN=%ESC%[1;32m"
@@ -43,8 +43,25 @@ set "BRIGHT_MAGENTA=%ESC%[1;35m"
 set "BRIGHT_CYAN=%ESC%[1;36m"
 set "BRIGHT_WHITE=%ESC%[1;37m"
 
-:: Background Colors
+:: 8 Standard Background Colors (40-47)
 set "BG_BLACK=%ESC%[40m"
+set "BG_RED=%ESC%[41m"
+set "BG_GREEN=%ESC%[42m"
+set "BG_YELLOW=%ESC%[43m"
+set "BG_BLUE=%ESC%[44m"
+set "BG_MAGENTA=%ESC%[45m"
+set "BG_CYAN=%ESC%[46m"
+set "BG_WHITE=%ESC%[47m"
+
+:: 8 Bright Background Colors (100-107)
+set "BG_BRIGHT_BLACK=%ESC%[100m"
+set "BG_BRIGHT_RED=%ESC%[101m"
+set "BG_BRIGHT_GREEN=%ESC%[102m"
+set "BG_BRIGHT_YELLOW=%ESC%[103m"
+set "BG_BRIGHT_BLUE=%ESC%[104m"
+set "BG_BRIGHT_MAGENTA=%ESC%[105m"
+set "BG_BRIGHT_CYAN=%ESC%[106m"
+set "BG_BRIGHT_WHITE=%ESC%[107m"
 
 :: Underlined Hyperlink & Divider Setup
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
@@ -57,25 +74,26 @@ title Windows 11 Software ^& Driver Updater
 :: Clear Screen Routine
 :: -----------------------------------------------------
 :CLEAR
-chcp 65001 >nul
+cmd /c "chcp 65001 >nul"
 cls
 
 :: -----------------------------------------------------
-:: Main Menu Display Loop (Restores CP65001 Without Clearing)
+:: Main Menu Display Loop
 :: -----------------------------------------------------
 :MENU
+:: Re-assert UTF-8 output encoding directly in CMD before redrawing menu
 cmd /c "chcp 65001 >nul"
 
 echo %DIVIDER%
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%   Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%    YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%     YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88
-echo %BG_BLACK%                                
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
+echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%    YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET%
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
 echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %URL_LINK% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
@@ -125,7 +143,7 @@ exit /b
 
 
 :: -----------------------------------------------------
-:: Option 1: List outdated software packages via Winget (Preserves Output)
+:: Option 1: List outdated software packages via Winget
 :: -----------------------------------------------------
 :SHOW_SW
 echo.
@@ -135,7 +153,6 @@ winget upgrade
 echo.
 pause
 echo.
-cmd /c "chcp 65001 >nul"
 goto MENU
 
 
@@ -170,7 +187,7 @@ goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 4: Query Windows Update Agent COM API for drivers (Safe Output)
+:: Option 4: Query Windows Update Agent COM API for drivers
 :: -----------------------------------------------------
 :SHOW_DRV
 echo.
@@ -181,7 +198,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncodin
 echo.
 pause
 echo.
-cmd /c "chcp 65001 >nul"
 goto MENU
 
 
@@ -194,7 +210,7 @@ set /p drvName="%BRIGHT_CYAN%Enter the name or keyword of the driver to update: 
 if "%drvName%"=="" goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Searching and installing matching driver update via Windows Update...%RESET%
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$d='%drvName%'; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $target=$res.Updates | Where-Object { $_.Title -like '*' + $d + '*' }; if ($target) { Write-Host 'Driver found. Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; $u.Add($target[0])|Out-Null; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Done!' -ForegroundColor Green } else { Write-Host 'No matching driver updates found.' -ForegroundColor Red }"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $d='%drvName%'; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $target=$res.Updates | Where-Object { $_.Title -like '*' + $d + '*' }; if ($target) { Write-Host 'Driver found. Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; $u.Add($target[0])|Out-Null; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Done!' -ForegroundColor Green } else { Write-Host 'No matching driver updates found.' -ForegroundColor Red }"
 echo.
 pause
 echo.
@@ -208,7 +224,7 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Scanning and installing ALL available driver updates via Windows Update...%RESET%
 echo.
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { Write-Host 'Found driver updates. Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; foreach($item in $drv){$u.Add($item)|Out-Null}; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Driver updates installed successfully!' -ForegroundColor Green }"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { Write-Host 'Found driver updates. Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; foreach($item in $drv){$u.Add($item)|Out-Null}; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Driver updates installed successfully!' -ForegroundColor Green }"
 echo.
 pause
 echo.
@@ -222,7 +238,7 @@ goto CLEAR
 cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
+start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
 timeout /t 1 >nul
 goto CLEAR
