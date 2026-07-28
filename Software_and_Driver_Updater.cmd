@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.00"
+set "VERSION=1.01"
 
 :: -----------------------------------------------------
 :: ANSI Escape Initialization & 16-Color Palette Setup
