@@ -252,12 +252,10 @@ echo %BRIGHT_BLACK%Repository: https://github.com/richcsst/HandyWindowsUtilities
 echo.
 
 set "TEMP_FILE=%TEMP%\updater_new.cmd"
-
-:: Raw URL targeting main branch with proper URL encoding
 set "RAW_URL=https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software%%20and%%20Driver%%20Updater.cmd"
 
-:: Download using PowerShell with single-quoted string to avoid CMD parser crashes
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$web = New-Object System.Net.WebClient; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $web.DownloadFile('https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software%%20and%%20Driver%%20Updater.cmd', '%TEMP_FILE%')" >nul 2>&1
+:: Download raw script using Windows native curl.exe (built-in on Win 10/11)
+curl.exe -s -f -L "https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software%%20and%%20Driver%%20Updater.cmd" -o "%TEMP_FILE%"
 
 if not exist "%TEMP_FILE%" (
     echo %BRIGHT_RED%[!] Error: Failed to download update from GitHub.%RESET%
