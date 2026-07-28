@@ -56,13 +56,13 @@ title Windows 11 Software ^& Driver Updater
 :: Clear screen once on initial launch
 :CLEAR
 :: Set UTF-8 codepage ONLY after ESC sequence initialization is complete
-chcp 65001 >nul
 cls
 
 :: -----------------------------------------------------
 :: Main Menu Display Loop
 :: -----------------------------------------------------
 :MENU
+chcp 65001 >nul
 echo %DIVIDER%
 echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
