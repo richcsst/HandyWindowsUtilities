@@ -65,7 +65,7 @@ set "BG_BRIGHT_WHITE=%ESC%[107m"
 
 title Windows 11 Software ^& Driver Updater
 
-set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%==================================================================================================================%RESET%"
+set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
 
 :: Clear screen once on initial launch
 :CLEAR
