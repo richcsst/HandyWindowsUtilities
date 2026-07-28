@@ -13,6 +13,11 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
+:: -----------------------------------------------------
+:: Check & Enforce Minimum Window Size (120x30)
+:: -----------------------------------------------------
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$w=(Get-Host).UI.RawUI; $ws=$w.WindowSize; $changed=$false; if($ws.Width -lt 120){$ws.Width=120; $changed=$true}; if($ws.Height -lt 30){$ws.Height=30; $changed=$true}; if($changed){ $w.WindowSize=$ws }"
+
 set "VERSION=1.01"
 
 :: -----------------------------------------------------
