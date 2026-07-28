@@ -253,12 +253,15 @@ echo.
 
 set "TEMP_FILE=%TEMP%\updater_new.cmd"
 
-:: Download raw script cleanly using PowerShell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$url = [Uri]::EscapeUriString('https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software and Driver Updater.cmd'); [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile($url, '%TEMP_FILE%')" >nul 2>&1
+:: Raw URL targeting main branch with proper URL encoding
+set "RAW_URL=https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software%%20and%%20Driver%%20Updater.cmd"
+
+:: Download using PowerShell with single-quoted string to avoid CMD parser crashes
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$web = New-Object System.Net.WebClient; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $web.DownloadFile('https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software%%20and%%20Driver%%20Updater.cmd', '%TEMP_FILE%')" >nul 2>&1
 
 if not exist "%TEMP_FILE%" (
     echo %BRIGHT_RED%[!] Error: Failed to download update from GitHub.%RESET%
-    echo %BRIGHT_RED%Check your internet connection or repository branch name.%RESET%
+    echo %BRIGHT_RED%Check your internet connection or verify the repository branch.%RESET%
     echo.
     pause
     goto MENU
