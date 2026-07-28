@@ -235,34 +235,25 @@ echo %BRIGHT_CYAN%[!] Checking GitHub repository for updates...%RESET%
 echo %BRIGHT_BLACK%Repository: https://github.com/richcsst/HandyWindowsUtilities%RESET%
 echo.
 
-set "RAW_URL=https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software%20and%20Driver%20Updater.cmd"
+set "RAW_URL=https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software%%20and%%20Driver%%20Updater.cmd"
 set "TEMP_FILE=%TEMP%\updater_new.cmd"
 
-:: Download latest script from main branch via PowerShell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "^
-    try { ^
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; ^
-        $web = New-Object System.Net.WebClient; ^
-        $web.DownloadFile('%RAW_URL%', '%TEMP_FILE%'); ^
-        exit 0; ^
-    } catch { ^
-        exit 1; ^
-    }"
+:: Download raw script from GitHub in a single clean PowerShell call
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('%RAW_URL%', '%TEMP_FILE%')" >nul 2>&1
 
-if %errorLevel% neq 0 (
+if not exist "%TEMP_FILE%" (
     echo %BRIGHT_RED%[!] Error: Failed to download update from GitHub. Check internet connection or repository URL.%RESET%
-    if exist "%TEMP_FILE%" del /f /q "%TEMP_FILE%" >nul
     echo.
     pause
     goto MENU
 )
 
-:: Compare version string in downloaded file against running version
+:: Extract REMOTE_VERSION from downloaded file using CMD's findstr
 for /f "tokens=2 delims==" %%V in ('findstr /I /C:"set \"VERSION=" "%TEMP_FILE%"') do set "REMOTE_VERSION=%%~V"
 
 if "%REMOTE_VERSION%"=="%VERSION%" (
     echo %BRIGHT_GREEN%[?] You are already running the latest version (v%VERSION%).%RESET%
-    if exist "%TEMP_FILE%" del /f /q "%TEMP_FILE%" >nul
+    del /f /q "%TEMP_FILE%" >nul 2>&1
     echo.
     pause
     goto MENU
@@ -271,7 +262,7 @@ if "%REMOTE_VERSION%"=="%VERSION%" (
 echo %BRIGHT_YELLOW%[!] New version found: v%REMOTE_VERSION% (Current: v%VERSION%)%RESET%
 echo %BRIGHT_CYAN%[!] Replacing script with updated version...%RESET%
 
-:: Overwrite the running batch file using a background cmd worker process
+:: Overwrite current file and relaunch
 start "" /b cmd /c "timeout /t 1 >nul & move /y "%TEMP_FILE%" "%~f0" >nul & start "" cmd /c ""%~f0"""
 exit /b
 
