@@ -228,17 +228,15 @@ goto MENU
 
 
 :: -----------------------------------------------------
-:: Option 7: Display License cleanly with Inline Pagination
+:: Option 7: Display License in a Separate Window
 :: -----------------------------------------------------
 :SHOW_LICENSE
 cls
-echo %BRIGHT_CYAN%--- GNU General Public License v3.0 ---%RESET%
-echo.
+echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$l=Get-Content -Path '%~f0'; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $c=0; for($i=$s; $i -lt $l.Length; $i++){ Write-Host $l[$i]; $c++; if($c -eq 25){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans = Read-Host; if($ans -match '^q') { break } } }"
+:: Spawn a new CMD window dedicated to the license viewer
+start "GNU General Public License v3.0" cmd /c "mode con: cols=120 lines=30 & cls & echo --- GNU General Public License v3.0 --- & echo. & powershell -NoProfile -ExecutionPolicy Bypass -Command \"$l=Get-Content -Path '%~f0'; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $c=0; for($i=$s; $i -lt $l.Length; $i++){ Write-Host $l[$i]; $c++; if($c -eq 22){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans = Read-Host; if($ans -match '^q') { break } } }\" & echo. & echo License viewer closed. Press any key to exit window... & pause >nul"
 
-echo.
-echo %BRIGHT_YELLOW%Returned to menu.%RESET%
 timeout /t 1 >nul
 goto CLEAR
 
