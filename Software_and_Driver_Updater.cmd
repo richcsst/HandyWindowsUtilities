@@ -64,9 +64,9 @@ set "BG_BRIGHT_MAGENTA=%ESC%[105m"
 set "BG_BRIGHT_CYAN=%ESC%[106m"
 set "BG_BRIGHT_WHITE=%ESC%[107m"
 
-:: Simple Clickable Hyperlink (No Color Styling)
+:: Underlined Auto-Detectable Link
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
-set "URL_LINK=%ESC%]8;;%REPO_URL%%ESC%\%REPO_URL%%ESC%]8;;%ESC%\"
+set "URL_LINK=%ESC%[4m%REPO_URL%%RESET%"
 
 title Windows 11 Software ^& Driver Updater
 
