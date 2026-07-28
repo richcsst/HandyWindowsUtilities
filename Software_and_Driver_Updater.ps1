@@ -41,12 +41,12 @@ function Show-License {
     Clear-Host
     Write-Host "${BRIGHT_CYAN}--- GNU General Public License v3.0 ---${RESET}`n"
 
-    $scriptContent = Get-Content -Path $PSCommandPath
-    $startIndex = [array]::IndexOf($scriptContent, '#[GPL_TEXT_BEGIN]') + 1
+    # Split the raw license string into lines
+    $licenseLines = $GPL_LICENSE_TEXT -split "`r?\n"
     $count = 0
 
-    for ($i = $startIndex; $i -lt $scriptContent.Length; $i++) {
-        Write-Host $scriptContent[$i]
+    foreach ($line in $licenseLines) {
+        Write-Host $line
         $count++
         if ($count -eq 25) {
             $count = 0
@@ -239,7 +239,7 @@ while ($true) {
     }
 }
 
-#[GPL_TEXT_BEGIN]
+$GPL_LICENSE_TEXT = @"
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -275,8 +275,7 @@ you modify it: responsibilities to respect the freedom of others.
 
   For example, if you distribute copies of such a program, whether
 gratis or for a fee, you must pass on to the recipients the same
-freedoms that you received.  You must make sure that they, too, receive
-or can get the source code.  And you must show them these terms so they
+freedoms that you received.  And you must show them these terms so they
 know their rights.
 
   Developers that use the GNU GPL protect your rights with two steps:
@@ -515,7 +514,7 @@ in one of these ways:
     with subsection 6b.
 
     d) Convey the object code by offering access from a designated
-    place (gratis or for a charge), and offer equivalent access to the
+    place (gratis or for a charge), event or offer equivalent access to the
     Corresponding Source in the same way through the same place at no
     further charge.  You need not require recipients to copy the
     Corresponding Source along with the object code.  If the place to
@@ -914,4 +913,4 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
-
+"@
