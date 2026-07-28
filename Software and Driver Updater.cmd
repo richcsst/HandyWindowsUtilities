@@ -2,6 +2,7 @@
 
 REM Quick Windows 11 Update Utility to update software and drivers without third-party utilities
 REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
+REM Distributed under the GNU GPL v 3.0 License
 
 :: -----------------------------------------------------
 :: Check for Administrative Privileges
