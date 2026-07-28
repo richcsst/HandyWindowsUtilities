@@ -77,14 +77,15 @@ cls
 :MENU
 echo %DIVIDER%
 echo %BG_BLACK%                                                                                                                              %RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄%RESET%   Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d%RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%████████  ████████%RESET%    Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88%RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%████████  ████████%RESET%     YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88%RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀%RESET%      YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88%RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄%RESET%   88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP%RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%████████  ████████%RESET%   88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP%RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%████████  ████████%RESET%   Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P%RESET%
-echo %BG_BLACK%   %BRIGHT_BLUE%▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀%RESET%   `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP%RESET%
+echo %BG_BLACK%   %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET%   Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
+echo %BG_BLACK%   %BRIGHT_BLUE%█████████  █████████  %RESET%    Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
+echo %BG_BLACK%   %BRIGHT_BLUE%█████████  █████████  %RESET%     YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88
+echo %BG_BLACK%   %BRIGHT_BLUE%█████████  █████████  %RESET%      YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88
+echo %BG_BLACK%   %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET%
+echo %BG_BLACK%   %BRIGHT_BLUE%█████████  █████████  %RESET%   88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
+echo %BG_BLACK%   %BRIGHT_BLUE%█████████  █████████  %RESET%   88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
+echo %BG_BLACK%   %BRIGHT_BLUE%█████████  █████████  %RESET%   Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
+echo %BG_BLACK%   %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET%   `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %BG_BLACK%                                                                                                                              %RESET%
 echo %DIVIDER%
 echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %MAGENTA%https://github.com/richcsst/HandyWindowsUtilities%RESET% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
