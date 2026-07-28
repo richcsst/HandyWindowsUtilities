@@ -5,18 +5,18 @@ REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilitie
 REM Distributed under the GNU GPL v 3.0 License
 
 :: -----------------------------------------------------
-:: Check for Administrative Privileges & Enforce Minimum Size (120x30)
+:: Check for Administrative Privileges & Set 120x30 Bounds
 :: -----------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/k mode con: cols=120 lines=50 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/k mode con: cols=120 lines=30 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
     exit /b
 )
 
-set "VERSION=1.01"
+set "VERSION=1.00"
 
 :: -----------------------------------------------------
-:: ANSI Escape Initialization & 16-Color Palette Setup
+:: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
 :: -----------------------------------------------------
 for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
 
@@ -43,38 +43,19 @@ set "BRIGHT_MAGENTA=%ESC%[1;35m"
 set "BRIGHT_CYAN=%ESC%[1;36m"
 set "BRIGHT_WHITE=%ESC%[1;37m"
 
-:: 8 Standard Background Colors
+:: Background Colors
 set "BG_BLACK=%ESC%[40m"
-set "BG_RED=%ESC%[41m"
-set "BG_GREEN=%ESC%[42m"
-set "BG_YELLOW=%ESC%[43m"
-set "BG_BLUE=%ESC%[44m"
-set "BG_MAGENTA=%ESC%[45m"
-set "BG_CYAN=%ESC%[46m"
-set "BG_WHITE=%ESC%[47m"
 
-
-:: 8 Bright / High-Intensity Background Colors
-set "BG_BRIGHT_BLACK=%ESC%[100m"
-set "BG_BRIGHT_RED=%ESC%[101m"
-set "BG_BRIGHT_GREEN=%ESC%[102m"
-set "BG_BRIGHT_YELLOW=%ESC%[103m"
-set "BG_BRIGHT_BLUE=%ESC%[104m"
-set "BG_BRIGHT_MAGENTA=%ESC%[105m"
-set "BG_BRIGHT_CYAN=%ESC%[106m"
-set "BG_BRIGHT_WHITE=%ESC%[107m"
-
-:: Underlined Auto-Detectable Link
+:: Underlined Hyperlink & Divider Setup
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
-set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
+set "URL_LINK=%ESC%[4m%REPO_URL%%RESET%"
+set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
 
 title Windows 11 Software ^& Driver Updater
 
-set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
-
 :: Clear screen once on initial launch
 :CLEAR
-:: Re-assert codepage to ensure menu graphics never corruption
+:: Set UTF-8 codepage ONLY after ESC sequence initialization is complete
 chcp 65001 >nul
 cls
 
@@ -91,7 +72,7 @@ echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
 echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %URL_LINK% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
@@ -151,7 +132,7 @@ winget upgrade
 echo.
 pause
 echo.
-goto MENU
+goto CLEAR
 
 
 :: -----------------------------------------------------
@@ -160,14 +141,14 @@ goto MENU
 :UPD_SPEC_SW
 echo.
 set /p swName="%BRIGHT_CYAN%Enter the exact or partial name/ID of the software to update: %RESET%"
-if "%swName%"=="" goto MENU
+if "%swName%"=="" goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Updating %swName%...%RESET%
 winget upgrade --id "%swName%" --exact || winget upgrade "%swName%"
 echo.
 pause
 echo.
-goto MENU
+goto CLEAR
 
 
 :: -----------------------------------------------------
@@ -181,7 +162,7 @@ winget upgrade --all --include-unknown
 echo.
 pause
 echo.
-goto MENU
+goto CLEAR
 
 
 :: -----------------------------------------------------
@@ -196,7 +177,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=New-Object -ComObject
 echo.
 pause
 echo.
-goto MENU
+goto CLEAR
 
 
 :: -----------------------------------------------------
@@ -205,14 +186,14 @@ goto MENU
 :UPD_SPEC_DRV
 echo.
 set /p drvName="%BRIGHT_CYAN%Enter the name or keyword of the driver to update: %RESET%"
-if "%drvName%"=="" goto MENU
+if "%drvName%"=="" goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Searching and installing matching driver update via Windows Update...%RESET%
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$d='%drvName%'; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $target=$res.Updates | Where-Object { $_.Title -like '*' + $d + '*' }; if ($target) { Write-Host 'Driver found. Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; $u.Add($target[0])|Out-Null; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Done!' -ForegroundColor Green } else { Write-Host 'No matching driver updates found.' -ForegroundColor Red }"
 echo.
 pause
 echo.
-goto MENU
+goto CLEAR
 
 
 :: -----------------------------------------------------
@@ -226,17 +207,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=New-Object -ComObject
 echo.
 pause
 echo.
-goto MENU
+goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 7: Display License in a Separate Window
+:: Option 7: Display License in Separate Window (Dynamic Height)
 :: -----------------------------------------------------
 :SHOW_LICENSE
 cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-:: Launch PowerShell directly, dynamically computing page height based on active window size
 start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
 timeout /t 1 >nul
@@ -290,8 +270,7 @@ you modify it: responsibilities to respect the freedom of others.
 
   For example, if you distribute copies of such a program, whether
 gratis or for a fee, you must pass on to the recipients the same
-freedoms that you received.  You must make sure that they, too, receive
-or can get the source code.  And you must show them these terms so they
+freedoms that you received.  And you must show them these terms so they
 know their rights.
 
   Developers that use the GNU GPL protect your rights with two steps:
@@ -875,7 +854,7 @@ an absolute waiver of all civil liability in connection with the
 Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.
 
-                     END OF TERMS AND CONDITIONS
+                      END OF TERMS AND CONDITIONS
 
             How to Apply These Terms to Your New Programs
 
