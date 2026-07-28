@@ -235,7 +235,7 @@ cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
 :: Launch PowerShell directly, dynamically computing page height based on active window size
-start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-3; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
+start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
 timeout /t 1 >nul
 goto CLEAR
