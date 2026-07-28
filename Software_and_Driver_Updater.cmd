@@ -102,10 +102,9 @@ echo    %BRIGHT_WHITE%6.%RESET% Update all drivers
 echo.
 echo  %BRIGHT_YELLOW%[System]%RESET%
 echo    %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0)
-echo    %BRIGHT_WHITE%8.%RESET% Check for Update ^& Update Script
-echo    %BRIGHT_WHITE%9.%RESET% Exit
+echo    %BRIGHT_WHITE%8.%RESET% Exit
 echo %DIVIDER%
-set /p choice="%BRIGHT_CYAN%Select an option (1-9): %RESET%"
+set /p choice="%BRIGHT_CYAN%Select an option (1-8): %RESET%"
 
 :: Route user selection
 if "%choice%"=="1" goto SHOW_SW
@@ -115,8 +114,7 @@ if "%choice%"=="4" goto SHOW_DRV
 if "%choice%"=="5" goto UPD_SPEC_DRV
 if "%choice%"=="6" goto UPD_ALL_DRV
 if "%choice%"=="7" goto SHOW_LICENSE
-if "%choice%"=="8" goto UPDATE_SCRIPT
-if "%choice%"=="9" goto EXIT
+if "%choice%"=="8" goto EXIT
 if "%choice%"=="0" goto RELOAD
 
 echo.
@@ -243,57 +241,7 @@ goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 8: Self-Update Script from GitHub
-:: -----------------------------------------------------
-:UPDATE_SCRIPT
-cls
-echo %BRIGHT_CYAN%[!] Checking GitHub repository for updates...%RESET%
-echo %BRIGHT_BLACK%Repository: https://github.com/richcsst/HandyWindowsUtilities%RESET%
-echo.
-
-set "TEMP_FILE=%TEMP%\updater_new.cmd"
-
-:: Download raw script cleanly using PowerShell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$url = [Uri]::EscapeUriString('https://raw.githubusercontent.com/richcsst/HandyWindowsUtilities/main/Software and Driver Updater.cmd'); [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile($url, '%TEMP_FILE%')" >nul 2>&1
-
-if not exist "%TEMP_FILE%" (
-    echo %BRIGHT_RED%[!] Error: Failed to download update from GitHub.%RESET%
-    echo %BRIGHT_RED%Check your internet connection or repository branch name.%RESET%
-    echo.
-    pause
-    goto MENU
-)
-
-:: Extract REMOTE_VERSION from the downloaded temporary script
-set "REMOTE_VERSION="
-for /f "tokens=2 delims==" %%V in ('findstr /I /C:"set \"VERSION=" "%TEMP_FILE%"') do set "REMOTE_VERSION=%%~V"
-
-if "%REMOTE_VERSION%"=="" (
-    echo %BRIGHT_RED%[!] Error: Unable to verify version from downloaded file.%RESET%
-    del /f /q "%TEMP_FILE%" >nul 2>&1
-    echo.
-    pause
-    goto MENU
-)
-
-if "%REMOTE_VERSION%"=="%VERSION%" (
-    echo %BRIGHT_GREEN%[✓] You are already running the latest version (v%VERSION%).%RESET%
-    del /f /q "%TEMP_FILE%" >nul 2>&1
-    echo.
-    pause
-    goto MENU
-)
-
-echo %BRIGHT_YELLOW%[!] New version found: v%REMOTE_VERSION% (Current: v%VERSION%)%RESET%
-echo %BRIGHT_CYAN%[!] Replacing script with updated version...%RESET%
-
-:: Hand off replacement and relaunch to a detached subshell
-start "" cmd /c "timeout /t 1 >nul & move /y "%TEMP_FILE%" "%~f0" >nul & start "" cmd /c ""%~f0"""
-exit /b
-
-
-:: -----------------------------------------------------
-:: Option 9: Exit Script
+:: Option 8: Exit Script
 :: -----------------------------------------------------
 :EXIT
 echo.
@@ -339,8 +287,7 @@ you modify it: responsibilities to respect the freedom of others.
 
   For example, if you distribute copies of such a program, whether
 gratis or for a fee, you must pass on to the recipients the same
-freedoms that you received.  You must make sure that they, too, receive
-or can get the source code.  And you must show them these terms so they
+freedoms that you received.  And you must show them these terms so they
 know their rights.
 
   Developers that use the GNU GPL protect your rights with two steps:
