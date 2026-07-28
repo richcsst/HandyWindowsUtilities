@@ -63,13 +63,13 @@ set "BG_BRIGHT_MAGENTA=%ESC%[105m"
 set "BG_BRIGHT_CYAN=%ESC%[106m"
 set "BG_BRIGHT_WHITE=%ESC%[107m"
 
-title Windows 11 Software ^& Driver Updater
-
-set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
-
 :: Clickable Hyperlink Variable (OSC 8 Sequence)
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
 set "URL_LINK=%ESC%]8;;%REPO_URL%%ESC%\%MAGENTA%%REPO_URL%%RESET%%ESC%]8;;%ESC%\"
+
+set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
+
+title Windows 11 Software ^& Driver Updater
 
 :: Clear screen once on initial launch
 :CLEAR
