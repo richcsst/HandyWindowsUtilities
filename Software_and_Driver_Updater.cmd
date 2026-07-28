@@ -64,6 +64,10 @@ set "BG_BRIGHT_MAGENTA=%ESC%[105m"
 set "BG_BRIGHT_CYAN=%ESC%[106m"
 set "BG_BRIGHT_WHITE=%ESC%[107m"
 
+:: Simple Clickable Hyperlink (No Color Styling)
+set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
+set "URL_LINK=%ESC%]8;;%REPO_URL%%ESC%\%REPO_URL%%ESC%]8;;%ESC%\"
+
 title Windows 11 Software ^& Driver Updater
 
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
@@ -87,7 +91,7 @@ echo %BG_BLACK%  %BRIGHT_BLUE%█████████  ███████
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
 echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
-echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %MAGENTA%https://github.com/richcsst/HandyWindowsUtilities%RESET% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
+echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %URL_LINK% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
 echo  %BRIGHT_YELLOW%[Software Management]%RESET%
 echo    %BRIGHT_WHITE%1.%RESET% Show software in need of updating
