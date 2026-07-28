@@ -64,19 +64,18 @@ cls
 :: Main Menu Display Loop (Restores CP65001 Without Clearing)
 :: -----------------------------------------------------
 :MENU
-:: Ensure code page is UTF-8 even when jumping directly from commands without clearing output
-chcp 65001 >nul
+cmd /c "chcp 65001 >nul"
 
 echo %DIVIDER%
-echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%    YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88
-echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET%
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
-echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%   Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%    YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%     YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88
+echo %BG_BLACK%                                
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
+echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
 echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %URL_LINK% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
@@ -136,6 +135,7 @@ winget upgrade
 echo.
 pause
 echo.
+cmd /c "chcp 65001 >nul"
 goto MENU
 
 
@@ -170,17 +170,18 @@ goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 4: Query Windows Update Agent COM API for drivers (Preserves Output)
+:: Option 4: Query Windows Update Agent COM API for drivers (Safe Output)
 :: -----------------------------------------------------
 :SHOW_DRV
 echo.
 echo %BRIGHT_CYAN%[!] Scanning Windows Update for driver updates...%RESET%
 echo %CYAN%(This may take 15-30 seconds to query Microsoft servers...)%RESET%
 echo.
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }"
 echo.
 pause
 echo.
+cmd /c "chcp 65001 >nul"
 goto MENU
 
 
