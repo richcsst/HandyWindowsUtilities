@@ -4,7 +4,7 @@ These utilities make Windows 11 easy to use without third party software, that u
 
 ## Software and Driver Updater.cmd
 
-This simple script shows a menu where you can scan for available updates for software and drivers.
+This simple script shows a menu where you can scan for available updates for software and drivers.  Just double-click on the file to run it.  It will ask for administrator privileges (this is normal) answer YES.
 
 ```dos
 ===================================================
