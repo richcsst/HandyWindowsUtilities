@@ -5,7 +5,7 @@ REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilitie
 REM Distributed under the GNU GPL v 3.0 License
 
 :: -----------------------------------------------------
-:: Check for Administrative Privileges & Set 120x30 Bounds
+:: Check for Administrative Privileges & Set 120x50 Bounds
 :: -----------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.00"
+set "VERSION=1.01"
 
 :: -----------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -74,40 +74,38 @@ title Windows 11 Software ^& Driver Updater
 :: Clear Screen Routine
 :: -----------------------------------------------------
 :CLEAR
-cmd /c "chcp 65001 >nul"
+chcp 65001 >nul
 cls
 
 :: -----------------------------------------------------
 :: Main Menu Display Loop
 :: -----------------------------------------------------
 :MENU
-cmd /c "chcp 65001 >nul"
-
 echo %DIVIDER%
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%   Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%    YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%     YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88
-echo %BG_BLACK%                                
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
-echo %BG_BLACK%  %BG_BLUE%         %RESET%%BG_BLACK%  %BG_BLUE%         %RESET%  `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
+echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb    dP    YbdPYbdP   o.`Y8b       88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%    YP  YP    88 88  Y8 8888Y"    YbodP      YP  YP    8bodP'       88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET%
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
 echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %URL_LINK% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
 echo  %BRIGHT_YELLOW%[Software Management]%RESET%
-echo    %BRIGHT_WHITE%1.%RESET% Show software in need of updating
+echo    %BRIGHT_WHITE%1.%RESET% Show software in need of updating %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%
 echo    %BRIGHT_WHITE%3.%RESET% Update all software
 echo.
 echo  %BRIGHT_YELLOW%[Driver Management]%RESET%
-echo    %BRIGHT_WHITE%4.%RESET% Show drivers in need of updating
+echo    %BRIGHT_WHITE%4.%RESET% Show drivers in need of updating %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
 echo    %BRIGHT_WHITE%6.%RESET% Update all drivers
 echo.
 echo  %BRIGHT_YELLOW%[System]%RESET%
-echo    %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0)
+echo    %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%8.%RESET% Exit
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN%Select an option (1-8): %RESET%"
@@ -142,17 +140,16 @@ exit /b
 
 
 :: -----------------------------------------------------
-:: Option 1: List outdated software packages via Winget
+:: Option 1: List outdated software packages via Winget (Spawns New Window)
 :: -----------------------------------------------------
 :SHOW_SW
 echo.
-echo %BRIGHT_CYAN%[!] Querying available software updates via Winget...%RESET%
-echo.
-winget upgrade
-echo.
-pause
-echo.
-goto MENU
+echo %BRIGHT_CYAN%[!] Opening software update list in a new window...%RESET%
+
+start "Outdated Software List - Winget" cmd /c "mode con: cols=120 lines=30 & chcp 65001 >nul & cls & echo --- Available Software Updates --- & echo. & winget upgrade & echo. & echo Press any key to close this window... & pause >nul"
+
+timeout /t 1 >nul
+goto CLEAR
 
 
 :: -----------------------------------------------------
@@ -186,18 +183,16 @@ goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 4: Query Windows Update Agent COM API for drivers
+:: Option 4: Query Windows Update Agent COM API (Spawns New Window)
 :: -----------------------------------------------------
 :SHOW_DRV
 echo.
-echo %BRIGHT_CYAN%[!] Scanning Windows Update for driver updates...%RESET%
-echo %CYAN%(This may take 15-30 seconds to query Microsoft servers...)%RESET%
-echo.
-powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }"
-echo.
-pause
-echo.
-goto MENU
+echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window...%RESET%
+
+start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowTitle='Pending Driver Updates'; Write-Host '--- Scanning Windows Update for pending drivers ---`n' -ForegroundColor Cyan; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+
+timeout /t 1 >nul
+goto CLEAR
 
 
 :: -----------------------------------------------------
@@ -231,13 +226,13 @@ goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 7: Display License in Separate Window
+:: Option 7: Display License in Separate Window (Paginated)
 :: -----------------------------------------------------
 :SHOW_LICENSE
 cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
+start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
 timeout /t 1 >nul
 goto CLEAR
