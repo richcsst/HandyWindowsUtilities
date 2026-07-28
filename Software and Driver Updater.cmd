@@ -1,7 +1,7 @@
 @echo off
 
 REM Quick Windows 11 Update Utility to update software and drivers without third-party utilities
-REM Written by Richard Kelsch
+REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
 
 :: -----------------------------------------------------
 :: Check for Administrative Privileges
@@ -64,9 +64,9 @@ pause
 goto MENU
 
 
-:: -----------------------------------------------------
+:: --------------------------------------------------------
 :: Option 2: Query Windows Update Agent COM API for drivers
-:: -----------------------------------------------------
+:: --------------------------------------------------------
 :SHOW_DRV
 cls
 echo [!] Scanning Windows Update for driver updates...
@@ -78,9 +78,9 @@ pause
 goto MENU
 
 
-:: -----------------------------------------------------
+:: --------------------------------------------------------
 :: Option 3: Upgrade a specific software package by name/ID
-:: -----------------------------------------------------
+:: --------------------------------------------------------
 :UPD_SPEC_SW
 cls
 echo.
