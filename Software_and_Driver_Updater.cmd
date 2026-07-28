@@ -66,7 +66,7 @@ set "BG_BRIGHT_WHITE=%ESC%[107m"
 
 :: Underlined Auto-Detectable Link
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
-set "URL_LINK=%ESC%[4m%REPO_URL%%RESET%"
+set "URL_LINK=%BRIGHT_MAGENTA%%ESC%[4m%REPO_URL%%RESET%"
 
 title Windows 11 Software ^& Driver Updater
 
