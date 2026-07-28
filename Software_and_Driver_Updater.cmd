@@ -234,11 +234,8 @@ goto MENU
 cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-:: Base64 encoded PowerShell script string to bypass CMD string mangling completely
-set "PS_CODE=J2xvY2FsJ3wgT3V0LU51bGw7ICRsPUdldC1Db250ZW50IC1QYXRoICclfmYwJzsgJHMBW2FycmF5XTo6SW5kZXBPZigkbCwnW0dQTF9URVhUX0JFR0lOXScpKzE7ICRjPTA7IGZvcigkaT0kczsgJGktbHQgJGwuTGVuZ3RoOyAkaSsrKXsKICAgIFdyaXRlLUhvc3QgJGxbJGldOwogICAgJGMrKzsKICAgIGlmKCRjIC1lcSAyMil7CiAgICAgICAgJGMrKzA7CiAgICAgICAgV3JpdGUtSG9zdCAnLS0gUHJlc3MgRU5URVIgZm9yIG5leHQgcGFnZSwgb3IgUSB0byBxdWl0IC0tICcgLUZvcmVncm91bmRDb2xvciBZZWxsb3cgLU5vTmV3bGluZTsKICAgICAgICAkYW5zID0gUmVhZC1Ib3N0OwogICAgICAgIGlmKCRhbnMgLW1hdGNoICdeCScpIHsgYnJlYWsgfQogICAgfQp9"
-
-:: Spawn the dedicated viewer window safely
-start "GNU General Public License v3.0" cmd /c "mode con: cols=120 lines=30 & cls & echo --- GNU General Public License v3.0 --- & echo. & powershell -NoProfile -ExecutionPolicy Bypass -Command \"$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq 22){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }\" & echo. & echo License viewer closed. Press any key to exit window... & pause >nul"
+:: Launch PowerShell directly in a new window using default console dimensions
+start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq 22){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
 timeout /t 1 >nul
 goto CLEAR
