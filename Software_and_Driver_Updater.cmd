@@ -13,12 +13,15 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.00"
+set "VERSION=1.01"
 
 :: -----------------------------------------------------
-:: ANSI Escape Initialization & 16-Color Palette Setup
+:: ANSI Escape Initialization & OSC 8 Hyperlink Setup
 :: -----------------------------------------------------
 for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
+
+:: Define BEL character (0x07) for clean OSC 8 termination
+for /f "delims=" %%a in ('powershell -NoProfile -ExecutionPolicy Bypass -Command "[char]7"') do set "BEL=%%a"
 
 :: Reset
 set "RESET=%ESC%[0m"
@@ -65,7 +68,7 @@ set "BG_BRIGHT_WHITE=%ESC%[107m"
 
 :: Clickable Hyperlink Variable (OSC 8 Sequence)
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
-set "URL_LINK=%ESC%]8;;%REPO_URL%%ESC%\%MAGENTA%%REPO_URL%%RESET%%ESC%]8;;%ESC%\"
+set "URL_LINK=%ESC%]8;;%REPO_URL%%BEL%%MAGENTA%%REPO_URL%%RESET%%ESC%]8;;%BEL%"
 
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
 
