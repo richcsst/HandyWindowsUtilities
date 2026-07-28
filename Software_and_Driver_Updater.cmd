@@ -1,5 +1,4 @@
 @echo off
-chcp 437 >nul
 
 REM Quick Windows 11 Update Utility to update software and drivers without third-party utilities
 REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
@@ -54,22 +53,20 @@ set "BG_MAGENTA=%ESC%[45m"
 set "BG_CYAN=%ESC%[46m"
 set "BG_WHITE=%ESC%[47m"
 
+
 :: 8 Bright / High-Intensity Background Colors
 set "BG_BRIGHT_BLACK=%ESC%[100m"
 set "BG_BRIGHT_RED=%ESC%[101m"
 set "BG_BRIGHT_GREEN=%ESC%[102m"
 set "BG_BRIGHT_YELLOW=%ESC%[103m"
+set "BG_BRIGHT_BLUE=%ESC%[104m"
 set "BG_BRIGHT_MAGENTA=%ESC%[105m"
 set "BG_BRIGHT_CYAN=%ESC%[106m"
 set "BG_BRIGHT_WHITE=%ESC%[107m"
 
-:: Clickable Hyperlink Variable (Pure CMD OSC 8 Escape Sequence)
-set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
-set "URL_LINK=%ESC%]8;;%REPO_URL%%ESC%\%MAGENTA%%REPO_URL%%RESET%%ESC%]8;;%ESC%\"
+title Windows 11 Software ^& Driver Updater
 
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
-
-title Windows 11 Software ^& Driver Updater
 
 :: Clear screen once on initial launch
 :CLEAR
@@ -90,7 +87,7 @@ echo %BG_BLACK%  %BRIGHT_BLUE%█████████  ███████
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
 echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
-echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %URL_LINK% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
+echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %MAGENTA%https://github.com/richcsst/HandyWindowsUtilities%RESET% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
 echo  %BRIGHT_YELLOW%[Software Management]%RESET%
 echo    %BRIGHT_WHITE%1.%RESET% Show software in need of updating
@@ -289,7 +286,8 @@ you modify it: responsibilities to respect the freedom of others.
 
   For example, if you distribute copies of such a program, whether
 gratis or for a fee, you must pass on to the recipients the same
-freedoms that you received.  And you must show them these terms so they
+freedoms that you received.  You must make sure that they, too, receive
+or can get the source code.  And you must show them these terms so they
 know their rights.
 
   Developers that use the GNU GPL protect your rights with two steps:
@@ -873,7 +871,7 @@ an absolute waiver of all civil liability in connection with the
 Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.
 
-                      END OF TERMS AND CONDITIONS
+                     END OF TERMS AND CONDITIONS
 
             How to Apply These Terms to Your New Programs
 
