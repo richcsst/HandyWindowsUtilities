@@ -74,6 +74,8 @@ set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%============================================
 
 :: Clear screen once on initial launch
 :CLEAR
+:: Re-assert codepage to ensure menu graphics never corruption
+chcp 65001 >nul
 cls
 
 :: -----------------------------------------------------
