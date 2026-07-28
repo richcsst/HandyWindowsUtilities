@@ -53,16 +53,20 @@ set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%============================================
 
 title Windows 11 Software ^& Driver Updater
 
-:: Clear screen once on initial launch
+:: -----------------------------------------------------
+:: Clear Screen Routine
+:: -----------------------------------------------------
 :CLEAR
-:: Set UTF-8 codepage ONLY after ESC sequence initialization is complete
 chcp 65001 >nul
 cls
 
 :: -----------------------------------------------------
-:: Main Menu Display Loop
+:: Main Menu Display Loop (Restores CP65001 Without Clearing)
 :: -----------------------------------------------------
 :MENU
+:: Ensure code page is UTF-8 even when jumping directly from commands without clearing output
+chcp 65001 >nul
+
 echo %DIVIDER%
 echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP    Yb   Yb  db  dP  `Ybo."     .d88 .d88
@@ -122,7 +126,7 @@ exit /b
 
 
 :: -----------------------------------------------------
-:: Option 1: List outdated software packages via Winget
+:: Option 1: List outdated software packages via Winget (Preserves Output)
 :: -----------------------------------------------------
 :SHOW_SW
 echo.
@@ -132,7 +136,7 @@ winget upgrade
 echo.
 pause
 echo.
-goto CLEAR
+goto MENU
 
 
 :: -----------------------------------------------------
@@ -166,7 +170,7 @@ goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 4: Query Windows Update Agent COM API for drivers
+:: Option 4: Query Windows Update Agent COM API for drivers (Preserves Output)
 :: -----------------------------------------------------
 :SHOW_DRV
 echo.
@@ -177,7 +181,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=New-Object -ComObject
 echo.
 pause
 echo.
-goto CLEAR
+goto MENU
 
 
 :: -----------------------------------------------------
@@ -211,7 +215,7 @@ goto CLEAR
 
 
 :: -----------------------------------------------------
-:: Option 7: Display License in Separate Window (Dynamic Height)
+:: Option 7: Display License in Separate Window
 :: -----------------------------------------------------
 :SHOW_LICENSE
 cls
