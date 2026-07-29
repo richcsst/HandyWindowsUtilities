@@ -231,6 +231,9 @@ goto CLEAR
 :: Option 8: Fix Corrupt Windows Files
 :: ------------------------------------------------------------------------
 :FIX_WINDOWS
+echo.
+echo %BRIGHT_YELLOW%Scanning for corrupt Windows files...%RESET%
+echo.
 sfc /scannow
 pause
 goto CLEAR
