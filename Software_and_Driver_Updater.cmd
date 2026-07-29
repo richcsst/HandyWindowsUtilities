@@ -94,7 +94,7 @@ echo      %BRIGHT_WHITE%3.%RESET% Update all software                           
 echo.
 echo    %BG_RED%%BRIGHT_YELLOW%                                                 System                                                  %RESET%
 echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
-echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files                             %BRIGHT_WHITE%Q.%RESET% Exit
+echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files                           %BRIGHT_WHITE%Q.%RESET% Exit
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN%Select an option (1-9 or Q): %RESET%"
 
