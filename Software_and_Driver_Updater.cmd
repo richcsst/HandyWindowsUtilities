@@ -65,7 +65,7 @@ set "BG_BRIGHT_WHITE=%ESC%[107m"
 
 :: Underlined Hyperlink & Divider Setup
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
-set "URL_LINK=%ESC%[4m%REPO_URL%%RESET%"
+set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
 
 title Windows 11 Software ^& Driver Updater
@@ -146,7 +146,7 @@ exit /b
 echo.
 echo %BRIGHT_CYAN%[!] Opening software update list in a new window...%RESET%
 
-start "Outdated Software List - Winget" cmd /c "mode con: cols=120 lines=30 & chcp 65001 >nul & cls & echo --- Available Software Updates --- & echo. & winget upgrade & echo. & echo Press any key to close this window... & pause >nul"
+start "Outdated Software List - Winget" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Available Software Updates --- & echo. & winget upgrade & echo. & echo Press any key to close this window... & pause >nul"
 
 timeout /t 1 >nul
 goto CLEAR
