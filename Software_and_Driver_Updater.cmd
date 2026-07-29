@@ -233,7 +233,11 @@ goto CLEAR
 :: ------------------------------------------------------------------------
 :FIX_WINDOWS
 echo.
-echo %BRIGHT_YELLOW%Checking for corrupt Windows files.%RESET%
+echo %BRIGHT_YELLOW%Running Deployment and Services Management checks...%RESET%
+echo.
+DISM /Online /Cleanup-Image /RestoreHealth
+echo.
+echo %BRIGHT_YELLOW%Running System File Checker...%RESET%
 echo.
 sfc /scannow
 pause
