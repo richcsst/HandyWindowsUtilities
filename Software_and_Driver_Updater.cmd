@@ -56,7 +56,7 @@ set "BG_WHITE=%ESC%[47m"
 :: Underlined Hyperlink & Divider Setup
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
 set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
-set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
+set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%======================================================================================================================%RESET%"
 
 title Windows 10/11 Software ^& Driver Updater
 
