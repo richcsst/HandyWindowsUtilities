@@ -72,10 +72,10 @@ cls
 :: ------------------------------------------------------------------------
 :MENU
 echo %DIVIDER%
-echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.   dP"Yb  Yb        dP .dP"Y8       .d   .d
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP   Yb  Yb  db  dP  `Ybo."     .d88 .d88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb   dP   YbdPYbdP   o.`Y8b       88   88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%    YP  YP    88 88  Y8 8888Y"   YbodP     YP  YP    8bodP'       88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.   dP"Yb  Yb        dP .dP"Y8       .d  dP"Yb     dP   .d   .d
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP   Yb  Yb  db  dP  `Ybo."     .d88 dP   Yb   dP  .d88 .d88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb   dP   YbdPYbdP   o.`Y8b       88 Yb   dP  dP     88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%    YP  YP    88 88  Y8 8888Y"   YbodP     YP  YP    8bodP'       88  YbodP  dP      88   88
 echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET%
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
