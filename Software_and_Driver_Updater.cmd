@@ -189,7 +189,7 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window...%RESET%
 
-start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowTitle='Pending Driver Updates'; Write-Host '--- Scanning Windows Update for pending drivers ---`n' -ForegroundColor Cyan; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowTitle='Pending Driver Updates'; Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host ''; Write-Host 'Scan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
 timeout /t 1 >nul
 goto CLEAR
