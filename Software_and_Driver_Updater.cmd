@@ -92,11 +92,9 @@ echo      %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens n
 echo      %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%          %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
 echo      %BRIGHT_WHITE%3.%RESET% Update all software                                 %BRIGHT_WHITE%6.%RESET% Update all drivers
 echo.
-echo    %BG_RED%%BRIGHT_YELLOW%                    System                       %RESET%
-echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%
-echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files
-echo      %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
-echo      %BRIGHT_WHITE%10.%RESET% Exit
+echo    %BG_RED%%BRIGHT_YELLOW%                                                       System                                                         %RESET%
+echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%              %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
+echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files                                                    %BRIGHT_WHITE%Q.%RESET% Exit
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN%Select an option (1-9 or Q): %RESET%"
 
