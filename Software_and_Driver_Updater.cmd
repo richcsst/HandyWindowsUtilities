@@ -87,17 +87,17 @@ echo            Version:  %GREEN%%VERSION%%RESET%
 echo  GitHub Repository:  %URL_LINK%
 echo            License:  %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
-echo  %BRIGHT_YELLOW%[Software Management]%RESET%
+echo  %YELLOW%[Software Management]%RESET%
 echo    %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%
 echo    %BRIGHT_WHITE%3.%RESET% Update all software
 echo.
-echo  %BRIGHT_YELLOW%[Driver Management]%RESET%
+echo  %YELLOW%[Driver Management]%RESET%
 echo    %BRIGHT_WHITE%4.%RESET% Rescan driver updates %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
 echo    %BRIGHT_WHITE%6.%RESET% Update all drivers
 echo.
-echo  %BRIGHT_YELLOW%[System]%RESET%
+echo  %YELLOW%[System]%RESET%
 echo    %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%8.%RESET% Exit
 echo %DIVIDER%
