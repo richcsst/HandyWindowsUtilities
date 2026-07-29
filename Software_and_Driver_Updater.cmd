@@ -61,21 +61,6 @@ set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%============================================
 title Windows 11 Software ^& Driver Updater
 
 :: ------------------------------------------------------------------------
-:: Auto-Spawn & Position Windows on Initial Launch
-:: ------------------------------------------------------------------------
-if "%~1"=="--child" goto CLEAR
-
-:: Reposition Main Menu Window to Left Side (X=0, Y=0)
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 0, 0, 950, 980, $true)" >nul 2>&1
-
-:: Auto-Spawn Option 1 (Software Updates Window at Center: X=950, Y=0)
-start "Outdated Software List - Winget" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 950, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Outdated Software List'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Available Software Updates ---`n' -ForegroundColor Cyan; winget upgrade; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
-
-:: Auto-Spawn Option 4 (Driver Updates Window at Right/2nd Screen: X=1900, Y=0)
-start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 1900, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Scanning Windows Update for pending drivers ---`n' -ForegroundColor Cyan; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
-
-
-:: ------------------------------------------------------------------------
 :: Clear Screen Routine
 :: ------------------------------------------------------------------------
 :CLEAR
