@@ -95,7 +95,8 @@ echo.
 echo    %BG_RED%%BRIGHT_YELLOW%                    System                       %RESET%
 echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%
 echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files
-echo      %BRIGHT_WHITE%9.%RESET% Exit
+echo      %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
+echo      %BRIGHT_WHITE%10.%RESET% Exit
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN%Select an option (1-9): %RESET%"
 
@@ -108,7 +109,8 @@ if "%choice%"=="5" goto UPD_SPEC_DRV
 if "%choice%"=="6" goto UPD_ALL_DRV
 if "%choice%"=="7" goto SHOW_LICENSE
 if "%choice%"=="8" goto FIX_WINDOWS
-if "%choice%"=="9" goto EXIT
+if "%choice%"=="9" goto CREATE_GODMODE
+if "%choice%"=="10" goto EXIT
 if "%choice%"=="0" goto RELOAD
 
 echo.
@@ -246,7 +248,32 @@ goto CLEAR
 
 
 :: ------------------------------------------------------------------------
-:: Option 9: Exit Script
+:: Option 9: Create God Mode Folder on Desktop
+:: ------------------------------------------------------------------------
+:CREATE_GODMODE
+echo.
+echo %BRIGHT_CYAN%[!] Creating God Mode folder on Desktop...%RESET%
+
+set "GODMODE_PATH=%USERPROFILE%\Desktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}"
+
+if exist "%GODMODE_PATH%" (
+    echo %BRIGHT_YELLOW%[!] God Mode folder already exists on your Desktop.%RESET%
+) else (
+    mkdir "%GODMODE_PATH%" >nul 2>&1
+    if exist "%GODMODE_PATH%" (
+        echo %GREEN%[+] God Mode folder created successfully on Desktop!%RESET%
+    ) else (
+        echo %BRIGHT_RED%[-] Failed to create God Mode folder.%RESET%
+    )
+)
+
+echo.
+pause
+goto CLEAR
+
+
+:: ------------------------------------------------------------------------
+:: Option 10: Exit Script
 :: ------------------------------------------------------------------------
 :EXIT
 echo.
