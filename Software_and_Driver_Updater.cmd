@@ -94,7 +94,8 @@ echo      %BRIGHT_WHITE%3.%RESET% Update all software                           
 echo.
 echo    %BG_RED%%BRIGHT_YELLOW%                    System                       %RESET%
 echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%
-echo      %BRIGHT_WHITE%8.%RESET% Exit
+echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files
+echo      %BRIGHT_WHITE%9.%RESET% Exit
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN%Select an option (1-8): %RESET%"
 
@@ -106,7 +107,8 @@ if "%choice%"=="4" goto SHOW_DRV
 if "%choice%"=="5" goto UPD_SPEC_DRV
 if "%choice%"=="6" goto UPD_ALL_DRV
 if "%choice%"=="7" goto SHOW_LICENSE
-if "%choice%"=="8" goto EXIT
+if "%choice%"=="8" goto FIX_WINDOWS
+if "%choice%"=="9" goto EXIT
 if "%choice%"=="0" goto RELOAD
 
 echo.
@@ -225,9 +227,17 @@ start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy B
 timeout /t 1 >nul
 goto CLEAR
 
+:: ------------------------------------------------------------------------
+:: Option 8: Fix Corrupt Windows Files
+:: ------------------------------------------------------------------------
+:FIX_WINDOWS
+sfc /scannow
+pause
+goto CLEAR
+
 
 :: ------------------------------------------------------------------------
-:: Option 8: Exit Script
+:: Option 9: Exit Script
 :: ------------------------------------------------------------------------
 :EXIT
 echo.
