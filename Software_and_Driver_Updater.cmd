@@ -82,8 +82,10 @@ echo %BG_BLACK%  %BRIGHT_BLUE%█████████  ███████
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
 echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
-echo            Written by %BRIGHT_YELLOW%Richard Kelsch%RESET% - Version %GREEN%%VERSION%%RESET% - %URL_LINK%
-echo                                        %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
+echo         Written by:  %BRIGHT_YELLOW%Richard Kelsch%RESET%
+echo            Version:  %GREEN%%VERSION%%RESET%
+echo  GitHub Repository:  %URL_LINK%
+echo            License:  %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
 echo  %BRIGHT_YELLOW%[Software Management]%RESET%
 echo    %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens new window)%RESET%
