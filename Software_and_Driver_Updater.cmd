@@ -98,7 +98,7 @@ echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files
 echo      %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
 echo      %BRIGHT_WHITE%10.%RESET% Exit
 echo %DIVIDER%
-set /p choice="%BRIGHT_CYAN%Select an option (1-9): %RESET%"
+set /p choice="%BRIGHT_CYAN%Select an option (1-9 or Q): %RESET%"
 
 :: Route user selection
 if "%choice%"=="1" goto SHOW_SW
@@ -110,7 +110,10 @@ if "%choice%"=="6" goto UPD_ALL_DRV
 if "%choice%"=="7" goto SHOW_LICENSE
 if "%choice%"=="8" goto FIX_WINDOWS
 if "%choice%"=="9" goto CREATE_GODMODE
-if "%choice%"=="10" goto EXIT
+if "%choice%"=="Q" goto EXIT
+if "%choice%"=="q" goto EXIT
+if "%choice%"=="X" goto EXIT
+if "%choice%"=="x" goto EXIT
 if "%choice%"=="0" goto RELOAD
 
 echo.
