@@ -4,9 +4,9 @@ REM Quick Windows 11 Update Utility to update software and drivers without third
 REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
 REM Distributed under the GNU GPL v 3.0 License
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Check for Administrative Privileges & Set 120x50 Bounds
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
     powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/k mode con: cols=120 lines=50 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
@@ -15,9 +15,9 @@ if %errorLevel% neq 0 (
 
 set "VERSION=1.01"
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
 
 :: Reset
@@ -70,16 +70,16 @@ set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%============================================
 
 title Windows 11 Software ^& Driver Updater
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Clear Screen Routine
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :CLEAR
 chcp 65001 >nul
 cls
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Main Menu Display Loop
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :MENU
 echo %DIVIDER%
 echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.    dP"Yb   Yb        dP .dP"Y8       .d   .d
@@ -127,9 +127,9 @@ timeout /t 2 >nul
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 0: Reload Script (Development Placeholder)
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :RELOAD
 cls
 echo %BRIGHT_CYAN%[!] Reloading script from disk...%RESET%
@@ -139,9 +139,9 @@ cmd /c ""%~f0""
 exit /b
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 1: List outdated software packages via Winget (Spawns New Window)
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :SHOW_SW
 echo.
 echo %BRIGHT_CYAN%[!] Opening software update list in a new window...%RESET%
@@ -152,9 +152,9 @@ timeout /t 1 >nul
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 2: Upgrade a specific software package by name/ID
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :UPD_SPEC_SW
 echo.
 set /p swName="%BRIGHT_CYAN%Enter the exact or partial name/ID of the software to update: %RESET%"
@@ -168,9 +168,9 @@ echo.
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 3: Bulk upgrade all software via Winget
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :UPD_ALL_SW
 echo.
 echo %BRIGHT_CYAN%[!] Updating ALL software packages via Winget...%RESET%
@@ -182,9 +182,9 @@ echo.
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 4: Query Windows Update Agent COM API (Spawns New Window)
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :SHOW_DRV
 echo.
 echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window...%RESET%
@@ -195,9 +195,9 @@ timeout /t 1 >nul
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 5: Search and install a specific driver
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :UPD_SPEC_DRV
 echo.
 set /p drvName="%BRIGHT_CYAN%Enter the name or keyword of the driver to update: %RESET%"
@@ -211,9 +211,9 @@ echo.
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 6: Bulk download & install all pending drivers
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :UPD_ALL_DRV
 echo.
 echo %BRIGHT_CYAN%[!] Scanning and installing ALL available driver updates via Windows Update...%RESET%
@@ -225,9 +225,9 @@ echo.
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 7: Display License in Separate Window (Paginated)
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :SHOW_LICENSE
 cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
@@ -238,9 +238,9 @@ timeout /t 1 >nul
 goto CLEAR
 
 
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :: Option 8: Exit Script
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
 :EXIT
 echo.
 echo %BRIGHT_YELLOW%Goodbye!%RESET%
