@@ -227,12 +227,13 @@ start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy B
 timeout /t 1 >nul
 goto CLEAR
 
+
 :: ------------------------------------------------------------------------
 :: Option 8: Fix Corrupt Windows Files
 :: ------------------------------------------------------------------------
 :FIX_WINDOWS
 echo.
-echo %BRIGHT_YELLOW%Scanning for corrupt Windows files...%RESET%
+echo %BRIGHT_YELLOW%Checking for corrupt Windows files.%RESET%
 echo.
 sfc /scannow
 pause
