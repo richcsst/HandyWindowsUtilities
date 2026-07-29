@@ -187,11 +187,11 @@ goto CLEAR
 :: -----------------------------------------------------
 :SHOW_DRV
 echo.
-echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window...%RESET%
+echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window.  Please be patient for the scan to complete...%RESET%
 
 start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 50); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host ''; Write-Host 'Scan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
-timeout /t 1 >nul
+timeout /t 3 >nul
 goto CLEAR
 
 
