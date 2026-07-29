@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.01"
+set "VERSION=1.02"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -53,22 +53,27 @@ set "BG_MAGENTA=%ESC%[45m"
 set "BG_CYAN=%ESC%[46m"
 set "BG_WHITE=%ESC%[47m"
 
-:: 8 Bright Background Colors (100-107)
-set "BG_BRIGHT_BLACK=%ESC%[100m"
-set "BG_BRIGHT_RED=%ESC%[101m"
-set "BG_BRIGHT_GREEN=%ESC%[102m"
-set "BG_BRIGHT_YELLOW=%ESC%[103m"
-set "BG_BRIGHT_BLUE=%ESC%[104m"
-set "BG_BRIGHT_MAGENTA=%ESC%[105m"
-set "BG_BRIGHT_CYAN=%ESC%[106m"
-set "BG_BRIGHT_WHITE=%ESC%[107m"
-
 :: Underlined Hyperlink & Divider Setup
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
 set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=====================================================================================================================%RESET%"
 
 title Windows 11 Software ^& Driver Updater
+
+:: ------------------------------------------------------------------------
+:: Auto-Spawn & Position Windows on Initial Launch
+:: ------------------------------------------------------------------------
+if "%~1"=="--child" goto CLEAR
+
+:: Reposition Main Menu Window to Left Side (X=0, Y=0)
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 0, 0, 950, 980, $true)" >nul 2>&1
+
+:: Auto-Spawn Option 1 (Software Updates Window at Center: X=950, Y=0)
+start "Outdated Software List - Winget" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 950, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Outdated Software List'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Available Software Updates ---`n' -ForegroundColor Cyan; winget upgrade; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+
+:: Auto-Spawn Option 4 (Driver Updates Window at Right/2nd Screen: X=1900, Y=0)
+start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 1900, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Scanning Windows Update for pending drivers ---`n' -ForegroundColor Cyan; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+
 
 :: ------------------------------------------------------------------------
 :: Clear Screen Routine
@@ -90,17 +95,17 @@ echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
 echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
 echo %BRIGHT_YELLOW%        Version%RESET% %GREEN%%VERSION%%RESET% - %URL_LINK% - %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
 echo  %BRIGHT_YELLOW%[Software Management]%RESET%
-echo    %BRIGHT_WHITE%1.%RESET% Show software in need of updating %BRIGHT_BLACK%(opens new window)%RESET%
+echo    %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%
 echo    %BRIGHT_WHITE%3.%RESET% Update all software
 echo.
 echo  %BRIGHT_YELLOW%[Driver Management]%RESET%
-echo    %BRIGHT_WHITE%4.%RESET% Show drivers in need of updating %BRIGHT_BLACK%(opens new window)%RESET%
+echo    %BRIGHT_WHITE%4.%RESET% Rescan driver updates %BRIGHT_BLACK%(opens new window)%RESET%
 echo    %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
 echo    %BRIGHT_WHITE%6.%RESET% Update all drivers
 echo.
@@ -135,18 +140,18 @@ cls
 echo %BRIGHT_CYAN%[!] Reloading script from disk...%RESET%
 timeout /t 1 >nul
 cls
-cmd /c ""%~f0""
+cmd /c ""%~f0" --child"
 exit /b
 
 
 :: ------------------------------------------------------------------------
-:: Option 1: List outdated software packages via Winget (Spawns New Window)
+:: Option 1: List outdated software packages via Winget
 :: ------------------------------------------------------------------------
 :SHOW_SW
 echo.
 echo %BRIGHT_CYAN%[!] Opening software update list in a new window...%RESET%
 
-start "Outdated Software List - Winget" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Available Software Updates --- & echo. & winget upgrade & echo. & echo Press any key to close this window... & pause >nul"
+start "Outdated Software List - Winget" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 950, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Outdated Software List'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Available Software Updates ---`n' -ForegroundColor Cyan; winget upgrade; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
 timeout /t 1 >nul
 goto CLEAR
@@ -182,16 +187,16 @@ echo.
 goto CLEAR
 
 
-:: -----------------------------------------------------
-:: Option 4: Query Windows Update Agent COM API (120x50 Window)
-:: -----------------------------------------------------
+:: ------------------------------------------------------------------------
+:: Option 4: Query Windows Update Agent COM API
+:: ------------------------------------------------------------------------
 :SHOW_DRV
 echo.
-echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window.  Please be patient for the scan to complete...%RESET%
+echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window...%RESET%
 
-start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 50); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host ''; Write-Host 'Scan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 1900, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Scanning Windows Update for pending drivers ---`n' -ForegroundColor Cyan; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
-timeout /t 3 >nul
+timeout /t 1 >nul
 goto CLEAR
 
 
