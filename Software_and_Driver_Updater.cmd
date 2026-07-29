@@ -9,7 +9,7 @@ REM Distributed under the GNU GPL v 3.0 License
 :: ------------------------------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/k mode con: cols=120 lines=50 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=50 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
     exit /b
 )
 
@@ -87,7 +87,7 @@ echo            Version:  %GREEN%%VERSION%%RESET%
 echo  GitHub Repository:  %URL_LINK%
 echo            License:  %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
-echo    %BG_RED%%BRIGHT_YELLOW%              Software Management                %RESET%     %BG_RED%%BRIGHT_YELLOW%               Driver Management                 %RESET%
+echo    %BG_RED%%BRIGHT_YELLOW%              Software Management                 %RESET%     %BG_RED%%BRIGHT_YELLOW%               Driver Management                  %RESET%
 echo      %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%4.%RESET% Rescan driver updates %BRIGHT_BLACK%(opens new window)%RESET%
 echo      %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%          %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
 echo      %BRIGHT_WHITE%3.%RESET% Update all software                                 %BRIGHT_WHITE%6.%RESET% Update all drivers
@@ -97,7 +97,7 @@ echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens n
 echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files
 echo      %BRIGHT_WHITE%9.%RESET% Exit
 echo %DIVIDER%
-set /p choice="%BRIGHT_CYAN%Select an option (1-8): %RESET%"
+set /p choice="%BRIGHT_CYAN%Select an option (1-9): %RESET%"
 
 :: Route user selection
 if "%choice%"=="1" goto SHOW_SW
@@ -136,7 +136,7 @@ exit /b
 echo.
 echo %BRIGHT_CYAN%[!] Opening software update list in a new window...%RESET%
 
-start "Outdated Software List - Winget" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 950, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Outdated Software List'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Available Software Updates ---`n' -ForegroundColor Cyan; winget upgrade; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+start "Outdated Software List - Winget" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Available Software Updates --- & echo. & winget upgrade & echo. & echo Press any key to close this window... & pause >nul"
 
 timeout /t 1 >nul
 goto CLEAR
@@ -179,7 +179,7 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window...%RESET%
 
-start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=Add-Type -MemberDefinition '[DllImport(\"user32.dll\")] public static extern bool MoveWindow(IntPtr h, int x, int y, int w, int h2, bool r);' -Name 'W' -Namespace 'W' -PassThru; $t::MoveWindow((Get-Process -Id $PID).MainWindowHandle, 1900, 0, 950, 980, $true); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8; Write-Host '--- Scanning Windows Update for pending drivers ---`n' -ForegroundColor Cyan; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host '`nScan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 50); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host ''; Write-Host 'Scan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
 timeout /t 1 >nul
 goto CLEAR
@@ -240,6 +240,7 @@ echo.
 echo %BRIGHT_YELLOW%Running System File Checker...%RESET%
 echo.
 sfc /scannow
+echo.
 pause
 goto CLEAR
 
