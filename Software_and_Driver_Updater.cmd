@@ -5,11 +5,11 @@ REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilitie
 REM Distributed under the GNU GPL v 3.0 License
 
 :: ------------------------------------------------------------------------
-:: Check for Administrative Privileges & Set 120x30 Bounds
+:: Check for Administrative Privileges & Set 120x57 Bounds
 :: ------------------------------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=30 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=57 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
     exit /b
 )
 
@@ -58,6 +58,12 @@ set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
 set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%======================================================================================================================%RESET%"
 
+set "WIN_SETUP=mode con: cols=120 lines=57 & chcp 65001 >nul & cls"
+set "PS_EXEC=powershell -NoProfile -ExecutionPolicy Bypass -Command"
+set "PS_WIN_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 57); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
+set "PS_GET_DRIVERS=$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) };"
+set "WIN_PAUSE=& echo. & echo Press any key to close this window... & pause >nul"
+
 title Windows 10/11 Software ^& Driver Updater
 
 :: ------------------------------------------------------------------------
@@ -72,33 +78,61 @@ cls
 :: ------------------------------------------------------------------------
 :MENU
 echo %DIVIDER%
-echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.   dP"Yb  Yb        dP .dP"Y8       .d  dP"Yb     dP   .d   .d
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP   Yb  Yb  db  dP  `Ybo."     .d88 dP   Yb   dP  .d88 .d88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb   dP   YbdPYbdP   o.`Y8b       88 Yb   dP  dP     88   88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET%    YP  YP    88 88  Y8 8888Y"   YbodP     YP  YP    8bodP'       88  YbodP  dP      88   88
-echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET%
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████  █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
-echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
+echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.   dP"Yb  Yb        dP .dP"Y8       .d  dP"Yb     dP   .d   .d
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP   Yb  Yb  db  dP  `Ybo."     .d88 dP   Yb   dP  .d88 .d88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb   dP   YbdPYbdP   o.`Y8b       88 Yb   dP  dP     88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET%    YP  YP    88 88  Y8 8888Y"   YbodP     YP  YP    8bodP'       88  YbodP  dP      88   88
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀  %RESET%
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
+echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
 echo %DIVIDER%
 echo         Written by:  %BRIGHT_YELLOW%Richard Kelsch%RESET%
 echo            Version:  %GREEN%%VERSION%%RESET%
 echo  GitHub Repository:  %URL_LINK%
 echo            License:  %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
-echo    %BG_RED%%BRIGHT_YELLOW%                Software Management                   %RESET% %BG_RED%%BRIGHT_YELLOW%                   Driver Management                      %RESET%
-echo      %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%4.%RESET% Rescan driver updates %BRIGHT_BLACK%(opens new window)%RESET%
-echo      %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%          %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
-echo      %BRIGHT_WHITE%3.%RESET% Update all software %BRIGHT_BLACK%(opens new window)%RESET%              %BRIGHT_WHITE%6.%RESET% Update all drivers %BRIGHT_BLACK%(opens new window)%RESET%
+echo  %BG_RED%%BRIGHT_YELLOW% Software Management %RESET%
+echo    %BRIGHT_GREEN%1%BRIGHT_WHITE%. Rescan software updates%RESET%
+echo       Runs %CYAN%winget upgrade%RESET% in a separate window to query official repositories and display available updates.
+echo    %BRIGHT_GREEN%2%BRIGHT_WHITE%. Update specific software%RESET%
+echo       Prompts for an ID or name, then runs an exact match targeted upgrade (%CYAN%winget upgrade --id "%RESET%%YELLOW%<Name>%RESET%%CYAN%"%RESET%).
+echo    %BRIGHT_GREEN%3%BRIGHT_WHITE%. Update all software%RESET%
+echo       Launches a child process executing %CYAN%winget upgrade --all --include-unknown%RESET% to update all packages.
 echo.
-echo    %BG_RED%%BRIGHT_YELLOW%                                                     System                                                       %RESET%
-echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
-echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files %BRIGHT_BLACK%(opens new window)%RESET%        %BRIGHT_WHITE%C.%RESET% Clear Temporary Files %BRIGHT_BLACK%(opens new window)%RESET%
-echo      %BRIGHT_WHITE%D.%RESET% Disk Cleanup %BRIGHT_BLACK%(opens new window)%RESET%                     %BRIGHT_WHITE%N.%RESET% Reset Network and Clear DNS cache %BRIGHT_BLACK%(opens new window)%RESET%
-echo      %BRIGHT_WHITE%U.%RESET% Flush Windows Update Cache %BRIGHT_BLACK%(opens new window)%RESET%       %BRIGHT_WHITE%Q.%RESET% Exit
+echo  %BG_RED%%BRIGHT_YELLOW% Driver Management %RESET%
+echo    %BRIGHT_GREEN%4%BRIGHT_WHITE%. Rescan driver updates%RESET%
+echo       Checks to see if any new drivers are available.
+echo    %BRIGHT_GREEN%5%BRIGHT_WHITE%. Update a specific driver%RESET%
+echo       Searches pending Windows drivers by keyword and downloads/installs the first matched update.
+echo    %BRIGHT_GREEN%6%BRIGHT_WHITE%. Update all drivers%RESET%
+echo       Enumerates all pending driver payloads via COM, downloads them sequentially, and triggers installation.
+echo.
+echo  %BG_RED%%BRIGHT_YELLOW% System Maintenance %RESET%
+echo    %BRIGHT_GREEN%B%BRIGHT_WHITE%. Battery Diagnostic Report%RESET%
+echo       Generates and opens an HTML battery capacity and lifecycle wear report (%CYAN%powercfg /batteryreport%RESET%).
+echo    %BRIGHT_GREEN%C%BRIGHT_WHITE%. Clear Temporary Files%RESET%
+echo       Spawns an independent console executing a forced sweep of the current user's %CYAN%%temp%%RESET% directory.
+echo    %BRIGHT_GREEN%D%BRIGHT_WHITE%. Disk Cleanup%RESET%
+echo       Runs %CYAN%cleanmgr /lowdisk /d %SystemDrive%%RESET% for a deep disk cleanup for the Windows system drive.
+echo    %BRIGHT_GREEN%F%BRIGHT_WHITE%. Fix Corrupt Windows Files%RESET%
+echo       Runs %CYAN%DISM /Online /Cleanup-Image /RestoreHealth%RESET% followed by %CYAN%sfc /scannow%RESET% to restore files.
+echo    %BRIGHT_GREEN%G%BRIGHT_WHITE%. Create God Mode Folder%RESET%
+echo       Creates an administrative master control folder on your Desktop.
+echo    %BRIGHT_GREEN%L%BRIGHT_WHITE%. View License%RESET%
+echo       Reads this script from disk and prints the GNU GPL v3.0 text using an interactive pager.
+echo    %BRIGHT_GREEN%N%BRIGHT_WHITE%. Reset Network and DNS%RESET%
+echo       Flushes DNS resolver cache, releases/renews DHCP leases, and resets the Winsock catalog.
+echo    %BRIGHT_GREEN%T%BRIGHT_WHITE%. Trim WinSxS Component Store%RESET%
+echo       Runs %CYAN%Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase%RESET% to remove superseded components.
+echo    %BRIGHT_GREEN%U%BRIGHT_WHITE%. Flush Windows Update Cache%RESET%
+echo       Stops update services, purges %CYAN%%SystemRoot%\SoftwareDistribution\Download%RESET%, and restarts services.
+echo.
+echo  %BG_RED%%BRIGHT_YELLOW% Navigation %RESET%
+echo    %BRIGHT_RED%Q%BRIGHT_WHITE%. Exit%RESET% - Exits the utility.
 echo %DIVIDER%
-set /p choice="%BRIGHT_CYAN% Select an option (1-9, C or Q): %RESET%"
+set /p choice="%BRIGHT_CYAN% Select an option (1-6, B, C, D, F, G, L, N, T, U or Q): %RESET%"
 
 :: Route user selection
 if "%choice%"=="1" goto SHOW_SW
@@ -107,24 +141,22 @@ if "%choice%"=="3" goto UPD_ALL_SW
 if "%choice%"=="4" goto SHOW_DRV
 if "%choice%"=="5" goto UPD_SPEC_DRV
 if "%choice%"=="6" goto UPD_ALL_DRV
-if "%choice%"=="7" goto SHOW_LICENSE
-if "%choice%"=="8" goto FIX_WINDOWS
-if "%choice%"=="9" goto CREATE_GODMODE
 if /i "%choice%"=="b" goto BATTERY_REPORT
 if /i "%choice%"=="c" goto CL_TEMP
 if /i "%choice%"=="d" goto DISK_CLEANUP
+if /i "%choice%"=="f" goto FIX_WINDOWS
+if /i "%choice%"=="g" goto CREATE_GODMODE
+if /i "%choice%"=="l" goto SHOW_LICENSE
 if /i "%choice%"=="n" goto RESET_NETWORK
-if /i "%choice%"=="u" goto CLEAR_WU_CACHE
-if /i "%choice%"=="w" goto CLEAN_WINSXS
 if /i "%choice%"=="q" goto EXIT
+if /i "%choice%"=="t" goto CLEAN_WINSXS
+if /i "%choice%"=="u" goto CLEAR_WU_CACHE
 if /i "%choice%"=="x" goto EXIT
 if "%choice%"=="0" goto RELOAD
 
 echo.
 echo %BRIGHT_RED%Invalid option selected. Please try again.%RESET%
-timeout /t 2 >nul
-goto CLEAR
-
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option 0: Reload Script (Development Placeholder)
@@ -137,7 +169,6 @@ cls
 cmd /c ""%~f0" --child"
 exit /b
 
-
 :: ------------------------------------------------------------------------
 :: Option 1: List outdated software packages via Winget
 :: ------------------------------------------------------------------------
@@ -145,11 +176,9 @@ exit /b
 echo.
 echo %BRIGHT_CYAN%[!] Opening software update list in a new window...%RESET%
 
-start "Outdated Software List - Winget" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Available Software Updates --- & echo. & winget upgrade & echo. & echo Press any key to close this window... & pause >nul"
+start "Outdated Software List - Winget" cmd /c "%WIN_SETUP% & echo --- Available Software Updates --- & echo. & winget upgrade %WIN_PAUSE%"
 
-timeout /t 1 >nul
-goto CLEAR
-
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option 2: Upgrade a specific software package by name/ID
@@ -171,11 +200,12 @@ goto CLEAR
 :: Option 3: Bulk upgrade all software via Winget
 :: ------------------------------------------------------------------------
 :UPD_ALL_SW
+echo.
+echo %BRIGHT_CYAN%[!] Updating ALL software packages via Winget in a new window...%RESET%
 
-start "echo. & echo %BRIGHT_CYAN%[!] Updating ALL software packages via Winget...%RESET%" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo. & winget upgrade --all --include-unknown & echo. & echo Press any key to close this window... & pause >nul"
-timeout /t 1 >nul
-goto CLEAR
+start "Winget Bulk Software Upgrade" cmd /c "%WIN_SETUP% & echo --- Updating All Software via Winget --- & echo. & winget upgrade --all --include-unknown %WIN_PAUSE%"
 
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option 4: Query Windows Update Agent COM API
@@ -184,11 +214,9 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Opening pending driver updates list in a new window...%RESET%
 
-start "Pending Driver Updates - Windows Update" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 50); $Host.UI.RawUI.WindowTitle='Pending Driver Updates'; Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host ''; Write-Host 'Scan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+start "Pending Driver Updates" %PS_EXEC% "%PS_WIN_SETUP% Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; %PS_GET_DRIVERS% if ($drv) { $drv | Select-Object Title, DriverModel | Format-Table -AutoSize } else { Write-Host 'No pending driver updates found.' -ForegroundColor Green }; Write-Host ''; Write-Host 'Scan finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
-timeout /t 1 >nul
-goto CLEAR
-
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option 5: Search and install a specific driver
@@ -205,7 +233,6 @@ pause
 echo.
 goto CLEAR
 
-
 :: ------------------------------------------------------------------------
 :: Option 6: Bulk download & install all pending drivers
 :: ------------------------------------------------------------------------
@@ -213,40 +240,56 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Launching bulk driver update in a new window...%RESET%
 
-start "Windows Driver Updates - Installation" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 50); $Host.UI.RawUI.WindowTitle='Bulk Driver Updates'; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { Write-Host ('Found {0} driver update(s). Downloading...' -f $drv.Count) -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; foreach($item in $drv){ $u.Add($item) | Out-Null }; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing driver updates...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Driver updates installed successfully!' -ForegroundColor Green }; Write-Host ''; Write-Host 'Process finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+start "Windows Driver Updates - Installation" %PS_EXEC% "%PS_WIN_SETUP% Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; %PS_GET_DRIVERS% if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { ... }; Write-Host ''; Write-Host 'Process finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
-timeout /t 1 >nul
-goto CLEAR
-
+goto DONE
 
 :: ------------------------------------------------------------------------
-:: Option 7: Display License in Separate Window (Paginated)
+:: Option B: Generate Battery Health Report
 :: ------------------------------------------------------------------------
-:SHOW_LICENSE
-cls
-echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
+:BATTERY_REPORT
+echo.
+echo %BRIGHT_CYAN%[!] Checking battery status in a new window...%RESET%
 
-start "GNU General Public License v3.0" powershell -NoProfile -ExecutionPolicy Bypass -Command "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
+start "Battery Diagnostic Report" %PS_EXEC% "%PS_WIN_SETUP% $Host.UI.RawUI.WindowTitle='Battery Diagnostic Report'; Write-Host '--- Checking System Battery ---' -ForegroundColor Cyan; Write-Host ''; $b = Get-CimInstance -ClassName Win32_Battery -ErrorAction SilentlyContinue; if ($b) { Write-Host '[!] Battery detected. Generating report...' -ForegroundColor Yellow; & powercfg /batteryreport /output \"$env:USERPROFILE\Desktop\battery-report.html\" | Out-Null; Write-Host '[+] Report saved to your Desktop!' -ForegroundColor Green; Start-Process \"$env:USERPROFILE\Desktop\battery-report.html\" } else { Write-Host '[-] No battery detected on this system (Desktop PC or virtual machine).' -ForegroundColor Red }; Write-Host ''; Write-Host 'Process finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
-timeout /t 1 >nul
-goto CLEAR
-
+goto DONE
 
 :: ------------------------------------------------------------------------
-:: Option 8: Fix Corrupt Windows Files
+:: Option C: Clear Temp files
+:: ------------------------------------------------------------------------
+:CL_TEMP
+echo.
+echo %BRIGHT_CYAN%[!] Opening Temporary File Cleaner in a new window...%RESET%
+
+start "Clear Temporary Files" cmd /c "%WIN_SETUP% & echo --- Clearing Temporary Files --- & echo. & echo (File-in-use errors are normal and can be safely ignored) & echo. & del /q /f /s "%temp%\*" & echo. & echo Temporary cleanup completed. Press any key to close this window... & pause >nul"
+
+goto DONE
+
+:: ------------------------------------------------------------------------
+:: Option D: Windows Deep Disk Cleanup
+:: ------------------------------------------------------------------------
+:DISK_CLEANUP
+echo.
+echo %BRIGHT_CYAN%[!] Spawning Windows Disk Cleanup...%RESET%
+
+start "Windows Disk Cleanup" cleanmgr /lowdisk /d %SystemDrive%
+
+goto DONE
+
+:: ------------------------------------------------------------------------
+:: Option F: Fix Corrupt Windows Files
 :: ------------------------------------------------------------------------
 :FIX_WINDOWS
 echo.
 echo %BRIGHT_CYAN%[!] Opening Windows System File Repair in a new window...%RESET%
 
-start "System Repair - DISM and SFC" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Running Deployment Image Servicing and Management (DISM) --- & echo. & DISM /Online /Cleanup-Image /RestoreHealth & echo. & echo --- Running System File Checker (SFC) --- & echo. & sfc /scannow & echo. & echo Repair operations complete. Press any key to close this window... & pause >nul"
+start "System Repair - DISM and SFC" cmd /c "%WIN_SETUP% & echo --- Running Deployment Image Servicing and Management (DISM) --- & echo. & DISM /Online /Cleanup-Image /RestoreHealth & echo. & echo --- Running System File Checker (SFC) --- & echo. & sfc /scannow & echo. & echo Repair operations complete. Press any key to close this window... & pause >nul"
 
-timeout /t 1 >nul
-goto CLEAR
-
+goto DONE
 
 :: ------------------------------------------------------------------------
-:: Option 9: Create God Mode Folder on Desktop
+:: Option G: Create God Mode Folder on Desktop
 :: ------------------------------------------------------------------------
 :CREATE_GODMODE
 echo.
@@ -265,52 +308,16 @@ if exist "%GODMODE_PATH%" (
     )
 )
 
-echo.
-pause
-goto CLEAR
-
 :: ------------------------------------------------------------------------
-:: Option B: Generate Battery Health Report
+:: Option L: Display License in Separate Window (Paginated)
 :: ------------------------------------------------------------------------
-:BATTERY_REPORT
-echo.
-echo %BRIGHT_CYAN%[!] Generating battery diagnostic report...%RESET%
+:SHOW_LICENSE
+cls
+echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-powercfg /batteryreport /output "%USERPROFILE%\Desktop\battery-report.html" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo %GREEN%[+] Battery report generated successfully on your Desktop!%RESET%
-    start "" "%USERPROFILE%\Desktop\battery-report.html"
-) else (
-    echo %BRIGHT_RED%[-] Unable to generate battery report (Desktop system or no battery present).%RESET%
-)
+start "GNU General Public License v3.0" %PS_EXEC% "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
-echo.
-pause
-goto CLEAR
-
-:: ------------------------------------------------------------------------
-:: Option C: Clear Temp files
-:: ------------------------------------------------------------------------
-:CL_TEMP
-echo.
-echo %BRIGHT_CYAN%[!] Opening Temporary File Cleaner in a new window...%RESET%
-
-start "Clear Temporary Files" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Clearing Temporary Files --- & echo. & echo (File-in-use errors are normal and can be safely ignored) & echo. & del /q /f /s "%temp%\*" & echo. & echo Temporary cleanup completed. Press any key to close this window... & pause >nul"
-
-timeout /t 1 >nul
-goto CLEAR
-
-:: ------------------------------------------------------------------------
-:: Option D: Windows Deep Disk Cleanup
-:: ------------------------------------------------------------------------
-:DISK_CLEANUP
-echo.
-echo %BRIGHT_CYAN%[!] Spawning Windows Disk Cleanup...%RESET%
-
-start "Windows Disk Cleanup" cleanmgr /lowdisk /d %SystemDrive%
-
-timeout /t 1 >nul
-goto CLEAR
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option N: Network & DNS Reset
@@ -319,10 +326,20 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Resetting network stack in a new window...%RESET%
 
-start "Network Stack Reset" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Flushing DNS and Resetting Network Stack --- & echo. & ipconfig /flushdns & echo. & ipconfig /release & echo. & ipconfig /renew & echo. & netsh winsock reset & echo. & echo Network reset complete. (A reboot is recommended if you had connection issues.) & echo. & echo Press any key to close this window... & pause >nul"
+start "Network Stack Reset" cmd /c "%WIN_SETUP% & echo --- Flushing DNS and Resetting Network Stack --- & echo. & ipconfig /flushdns & echo. & ipconfig /release & echo. & ipconfig /renew & echo. & netsh winsock reset & echo. & echo Network reset complete. (A reboot is recommended if you had connection issues.) %WIN_PAUSE%"
 
-timeout /t 1 >nul
-goto CLEAR
+goto DONE
+
+:: ------------------------------------------------------------------------
+:: Option T: Trim WinSxS Component Store
+:: ------------------------------------------------------------------------
+:CLEAN_WINSXS
+echo.
+echo %BRIGHT_CYAN%[!] Trimming superseded components in a new window...%RESET%
+
+start "WinSxS Base Reset" cmd /c "%WIN_SETUP% & echo --- Trimming Superseded Windows Components (WinSxS) --- & echo. & echo (Note: This prevents rolling back previously installed updates) & echo. & Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase & echo. & echo Cleanup finished. Press any key to close this window... & pause >nul"
+
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option U: Flush Windows Update Cache
@@ -331,22 +348,9 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Resetting Windows Update cache in a new window...%RESET%
 
-start "Flush Windows Update Cache" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Stopping Update Services --- & echo. & net stop wuauserv & net stop bits & echo. & echo --- Purging Update Download Staging Area --- & del /q /f /s "%SystemRoot%\SoftwareDistribution\Download\*" & echo. & echo --- Restarting Update Services --- & net start bits & net start wuauserv & echo. & echo Windows Update download cache cleared. & echo. & echo Press any key to close this window... & pause >nul"
+start "Flush Windows Update Cache" cmd /c "%WIN_SETUP% & echo --- Stopping Update Services --- & echo. & net stop wuauserv & net stop bits & echo. & echo --- Purging Update Download Staging Area --- & del /q /f /s "%SystemRoot%\SoftwareDistribution\Download\*" & echo. & echo --- Restarting Update Services --- & net start bits & net start wuauserv & echo. & echo Windows Update download cache cleared. %WIN_PAUSE%"
 
-timeout /t 1 >nul
-goto CLEAR
-
-:: ------------------------------------------------------------------------
-:: Option W: Trim WinSxS Component Store
-:: ------------------------------------------------------------------------
-:CLEAN_WINSXS
-echo.
-echo %BRIGHT_CYAN%[!] Trimming superseded components in a new window...%RESET%
-
-start "WinSxS Base Reset" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Trimming Superseded Windows Components (WinSxS) --- & echo. & echo (Note: This prevents rolling back previously installed updates) & echo. & Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase & echo. & echo Cleanup finished. Press any key to close this window... & pause >nul"
-
-timeout /t 1 >nul
-goto CLEAR
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option Q: Exit Script
@@ -357,6 +361,9 @@ echo %BRIGHT_YELLOW%Goodbye!%RESET%
 timeout /t 1 >nul
 exit /b
 
+:DONE
+timeout /t 1 >nul
+goto CLEAR
 
 :: DO NOT DELETE OR EDIT THIS LINE - MARKER FOR LICENSE PARSER
 [GPL_TEXT_BEGIN]
