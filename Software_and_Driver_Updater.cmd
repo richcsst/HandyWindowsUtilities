@@ -120,8 +120,6 @@ echo    %BRIGHT_GREEN%F%BRIGHT_WHITE%. Fix Corrupt Windows Files%RESET%
 echo       Runs %CYAN%DISM /Online /Cleanup-Image /RestoreHealth%RESET% followed by %CYAN%sfc /scannow%RESET% to restore files.
 echo    %BRIGHT_GREEN%G%BRIGHT_WHITE%. Create God Mode Folder%RESET%
 echo       Creates an administrative master control folder on your Desktop.
-echo    %BRIGHT_GREEN%L%BRIGHT_WHITE%. View License%RESET%
-echo       Reads this script from disk and prints the GNU GPL v3.0 text using an interactive pager.
 echo    %BRIGHT_GREEN%N%BRIGHT_WHITE%. Reset Network and DNS%RESET%
 echo       Flushes DNS resolver cache, releases/renews DHCP leases, and resets the Winsock catalog.
 echo    %BRIGHT_GREEN%T%BRIGHT_WHITE%. Trim WinSxS Component Store%RESET%
@@ -130,6 +128,8 @@ echo    %BRIGHT_GREEN%U%BRIGHT_WHITE%. Flush Windows Update Cache%RESET%
 echo       Stops update services, purges %CYAN%%SystemRoot%\SoftwareDistribution\Download%RESET%, and restarts services.
 echo.
 echo  %BG_RED%%BRIGHT_YELLOW% Navigation %RESET%
+echo    %BRIGHT_GREEN%L%BRIGHT_WHITE%. View License%RESET%
+echo       Show the GNU GPL v3.0 license text using an interactive pager.
 echo    %BRIGHT_RED%Q%BRIGHT_WHITE%. Exit%RESET% - Exits the utility.
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN% Select an option (1-6, B, C, D, F, G, L, N, T, U or Q): %RESET%"
