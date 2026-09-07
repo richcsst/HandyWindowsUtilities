@@ -61,6 +61,7 @@ set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%============================================
 set "WIN_SETUP=mode con: cols=120 lines=57 & chcp 65001 >nul & cls"
 set "PS_EXEC=powershell -NoProfile -ExecutionPolicy Bypass -Command"
 set "PS_WIN_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 57); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
+set "PS_LIC_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(80, 57); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
 set "PS_GET_DRIVERS=$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) };"
 set "WIN_PAUSE=& echo. & echo Press any key to close this window... & pause >nul"
 
@@ -132,31 +133,32 @@ echo    %BRIGHT_GREEN%L%BRIGHT_WHITE%. View License%RESET%
 echo       Show the GNU GPL v3.0 license text using an interactive pager.
 echo    %BRIGHT_RED%Q%BRIGHT_WHITE%. Exit%RESET% - Exits the utility.
 echo %DIVIDER%
-set /p choice="%BRIGHT_CYAN% Select an option (1-6, B, C, D, F, G, L, N, T, U or Q): %RESET%"
 
-:: Route user selection
-if "%choice%"=="1" goto SHOW_SW
-if "%choice%"=="2" goto UPD_SPEC_SW
-if "%choice%"=="3" goto UPD_ALL_SW
-if "%choice%"=="4" goto SHOW_DRV
-if "%choice%"=="5" goto UPD_SPEC_DRV
-if "%choice%"=="6" goto UPD_ALL_DRV
-if /i "%choice%"=="b" goto BATTERY_REPORT
-if /i "%choice%"=="c" goto CL_TEMP
-if /i "%choice%"=="d" goto DISK_CLEANUP
-if /i "%choice%"=="f" goto FIX_WINDOWS
-if /i "%choice%"=="g" goto CREATE_GODMODE
-if /i "%choice%"=="l" goto SHOW_LICENSE
-if /i "%choice%"=="n" goto RESET_NETWORK
-if /i "%choice%"=="q" goto EXIT
-if /i "%choice%"=="t" goto CLEAN_WINSXS
-if /i "%choice%"=="u" goto CLEAR_WU_CACHE
-if /i "%choice%"=="x" goto EXIT
-if "%choice%"=="0" goto RELOAD
+:: Prompt without newline, then capture keypress immediately (0 is hidden)
+<nul set /p "=%BRIGHT_CYAN% Select an option (1-6, B, C, D, F, G, L, N, T, U, or Q): %RESET%"
+choice /c 123456BCDFGLNTUQ0 /n >nul
 
-echo.
-echo %BRIGHT_RED%Invalid option selected. Please try again.%RESET%
-goto DONE
+:: Route selection via 1-based choice index
+:: 1=1, 2=2, 3=3, 4=4, 5=5, 6=6, 7=B, 8=C, 9=D, 10=F, 11=G, 12=L, 13=N, 14=T, 15=U, 16=Q, 17=0
+if %errorlevel% equ 1  goto SHOW_SW
+if %errorlevel% equ 2  goto UPD_SPEC_SW
+if %errorlevel% equ 3  goto UPD_ALL_SW
+if %errorlevel% equ 4  goto SHOW_DRV
+if %errorlevel% equ 5  goto UPD_SPEC_DRV
+if %errorlevel% equ 6  goto UPD_ALL_DRV
+if %errorlevel% equ 7  goto BATTERY_REPORT
+if %errorlevel% equ 8  goto CL_TEMP
+if %errorlevel% equ 9  goto DISK_CLEANUP
+if %errorlevel% equ 10 goto FIX_WINDOWS
+if %errorlevel% equ 11 goto CREATE_GODMODE
+if %errorlevel% equ 12 goto SHOW_LICENSE
+if %errorlevel% equ 13 goto RESET_NETWORK
+if %errorlevel% equ 14 goto CLEAN_WINSXS
+if %errorlevel% equ 15 goto CLEAR_WU_CACHE
+if %errorlevel% equ 16 goto EXIT
+if %errorlevel% equ 17 goto RELOAD
+
+goto CLEAR
 
 :: ------------------------------------------------------------------------
 :: Option 0: Reload Script (Development Placeholder)
@@ -315,7 +317,7 @@ if exist "%GODMODE_PATH%" (
 cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-start "GNU General Public License v3.0" %PS_EXEC% "$f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=$Host.UI.RawUI.WindowSize.Height-1; if($h -lt 10){$h=25}; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break} } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
+start "GNU General Public License v3.0" %PS_EXEC% "%PS_LIC_SETUP% $Host.UI.RawUI.WindowTitle='GNU General Public License v3.0'; $e=[char]27; $f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=54; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break}; Write-Host -NoNewline \"$e[1A`r$e[2K\" } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
 goto DONE
 
@@ -361,6 +363,9 @@ echo %BRIGHT_YELLOW%Goodbye!%RESET%
 timeout /t 1 >nul
 exit /b
 
+:: ------------------------------------------------------------------------
+:: Timeout and clear
+:: ------------------------------------------------------------------------
 :DONE
 timeout /t 1 >nul
 goto CLEAR
