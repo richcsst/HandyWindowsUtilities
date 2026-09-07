@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.03"
+set "VERSION=1.04"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -90,11 +90,11 @@ echo %DIVIDER%
 echo    %BG_RED%%BRIGHT_YELLOW%              Software Management                 %RESET%     %BG_RED%%BRIGHT_YELLOW%               Driver Management                  %RESET%
 echo      %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%4.%RESET% Rescan driver updates %BRIGHT_BLACK%(opens new window)%RESET%
 echo      %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%          %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
-echo      %BRIGHT_WHITE%3.%RESET% Update all software                                 %BRIGHT_WHITE%6.%RESET% Update all drivers
+echo      %BRIGHT_WHITE%3.%RESET% Update all software %BRIGHT_BLACK%(opens new window)%RESET%              %BRIGHT_WHITE%6.%RESET% Update all drivers %BRIGHT_BLACK%(opens new window)%RESET%
 echo.
 echo    %BG_RED%%BRIGHT_YELLOW%                                                 System                                                  %RESET%
 echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
-echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files                           %BRIGHT_WHITE%C.%RESET% Clear Temporary Files
+echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files %BRIGHT_BLACK%(opens new window)%RESET%        %BRIGHT_WHITE%C.%RESET% Clear Temporary Files %BRIGHT_BLACK%(opens new window)%RESET%
 echo      %BRIGHT_WHITE%Q.%RESET% Exit
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN% Select an option (1-9, C or Q): %RESET%"
@@ -109,12 +109,9 @@ if "%choice%"=="6" goto UPD_ALL_DRV
 if "%choice%"=="7" goto SHOW_LICENSE
 if "%choice%"=="8" goto FIX_WINDOWS
 if "%choice%"=="9" goto CREATE_GODMODE
-if "%choice%"=="C" goto CL_TEMP
-if "%choice%"=="c" goto CL_TEMP
-if "%choice%"=="Q" goto EXIT
-if "%choice%"=="q" goto EXIT
-if "%choice%"=="X" goto EXIT
-if "%choice%"=="x" goto EXIT
+if /i "%choice%"=="c" goto CL_TEMP
+if /i "%choice%"=="q" goto EXIT
+if /i "%choice%"=="x" goto EXIT
 if "%choice%"=="0" goto RELOAD
 
 echo.
@@ -168,13 +165,9 @@ goto CLEAR
 :: Option 3: Bulk upgrade all software via Winget
 :: ------------------------------------------------------------------------
 :UPD_ALL_SW
-echo.
-echo %BRIGHT_CYAN%[!] Updating ALL software packages via Winget...%RESET%
-echo.
-winget upgrade --all --include-unknown
-echo.
-pause
-echo.
+
+start "echo. & echo %BRIGHT_CYAN%[!] Updating ALL software packages via Winget...%RESET%" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo. & winget upgrade --all --include-unknown & echo. & echo Press any key to close this window... & pause >nul"
+timeout /t 1 >nul
 goto CLEAR
 
 
@@ -212,12 +205,11 @@ goto CLEAR
 :: ------------------------------------------------------------------------
 :UPD_ALL_DRV
 echo.
-echo %BRIGHT_CYAN%[!] Scanning and installing ALL available driver updates via Windows Update...%RESET%
-echo.
-powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { Write-Host 'Found driver updates. Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; foreach($item in $drv){$u.Add($item)|Out-Null}; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Driver updates installed successfully!' -ForegroundColor Green }"
-echo.
-pause
-echo.
+echo %BRIGHT_CYAN%[!] Launching bulk driver update in a new window...%RESET%
+
+start "Windows Driver Updates - Installation" powershell -NoProfile -ExecutionPolicy Bypass -Command "$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 50); $Host.UI.RawUI.WindowTitle='Bulk Driver Updates'; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) }; if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { Write-Host ('Found {0} driver update(s). Downloading...' -f $drv.Count) -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; foreach($item in $drv){ $u.Add($item) | Out-Null }; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing driver updates...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Driver updates installed successfully!' -ForegroundColor Green }; Write-Host ''; Write-Host 'Process finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+
+timeout /t 1 >nul
 goto CLEAR
 
 
@@ -239,15 +231,11 @@ goto CLEAR
 :: ------------------------------------------------------------------------
 :FIX_WINDOWS
 echo.
-echo %BRIGHT_YELLOW%Running Deployment and Services Management checks...%RESET%
-echo.
-DISM /Online /Cleanup-Image /RestoreHealth
-echo.
-echo %BRIGHT_YELLOW%Running System File Checker...%RESET%
-echo.
-sfc /scannow
-echo.
-pause
+echo %BRIGHT_CYAN%[!] Opening Windows System File Repair in a new window...%RESET%
+
+start "System Repair - DISM and SFC" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Running Deployment Image Servicing and Management (DISM) --- & echo. & DISM /Online /Cleanup-Image /RestoreHealth & echo. & echo --- Running System File Checker (SFC) --- & echo. & sfc /scannow & echo. & echo Repair operations complete. Press any key to close this window... & pause >nul"
+
+timeout /t 1 >nul
 goto CLEAR
 
 
@@ -280,13 +268,8 @@ goto CLEAR
 :: Option C: Clear Temp files
 :: ------------------------------------------------------------------------
 :CL_TEMP
-echo.
-echo %BRIGHT_CYAN%[!] Clearing temporary data...%RESET%
 
-Del /q /f /s %temp%\*
-
-echo.
-pause
+start "echo. & echo %BRIGHT_CYAN%[!] Clearing temporary data...%RESET%" cmd /c "Del /q /f /s %temp%\* & echo. & echo Press any key to close this window... & pause >nul"
 goto CLEAR
 
 :: ------------------------------------------------------------------------
