@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.02"
+set "VERSION=1.03"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -94,9 +94,10 @@ echo      %BRIGHT_WHITE%3.%RESET% Update all software                           
 echo.
 echo    %BG_RED%%BRIGHT_YELLOW%                                                 System                                                  %RESET%
 echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
-echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files                           %BRIGHT_WHITE%Q.%RESET% Exit
+echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files                           %BRIGHT_WHITE%C.%RESET% Clear Temporary Files
+echo      %BRIGHT_WHITE%Q.%RESET% Exit
 echo %DIVIDER%
-set /p choice="%BRIGHT_CYAN% Select an option (1-9 or Q): %RESET%"
+set /p choice="%BRIGHT_CYAN% Select an option (1-9, C or Q): %RESET%"
 
 :: Route user selection
 if "%choice%"=="1" goto SHOW_SW
@@ -108,6 +109,8 @@ if "%choice%"=="6" goto UPD_ALL_DRV
 if "%choice%"=="7" goto SHOW_LICENSE
 if "%choice%"=="8" goto FIX_WINDOWS
 if "%choice%"=="9" goto CREATE_GODMODE
+if "%choice%"=="C" goto CL_TEMP
+if "%choice%"=="c" goto CL_TEMP
 if "%choice%"=="Q" goto EXIT
 if "%choice%"=="q" goto EXIT
 if "%choice%"=="X" goto EXIT
@@ -274,7 +277,20 @@ goto CLEAR
 
 
 :: ------------------------------------------------------------------------
-:: Option 10: Exit Script
+:: Option C: Clear Temp files
+:: ------------------------------------------------------------------------
+:CL_TEMP
+echo.
+echo %BRIGHT_CYAN%[!] Clearing temporary data...%RESET%
+
+Del /q /f /s %temp%\*
+
+echo.
+pause
+goto CLEAR
+
+:: ------------------------------------------------------------------------
+:: Option Q: Exit Script
 :: ------------------------------------------------------------------------
 :EXIT
 echo.
