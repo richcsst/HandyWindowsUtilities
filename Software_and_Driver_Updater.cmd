@@ -268,8 +268,12 @@ goto CLEAR
 :: Option C: Clear Temp files
 :: ------------------------------------------------------------------------
 :CL_TEMP
+echo.
+echo %BRIGHT_CYAN%[!] Opening Temporary File Cleaner in a new window...%RESET%
 
-start "echo. & echo %BRIGHT_CYAN%[!] Clearing temporary data (ignore any errors)...%RESET%" cmd /c "Del /q /f /s %temp%\* & echo. & echo Press any key to close this window... & pause >nul"
+start "Clear Temporary Files" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Clearing Temporary Files --- & echo. & echo (File-in-use errors are normal and can be safely ignored) & echo. & del /q /f /s "%temp%\*" & echo. & echo Temporary cleanup completed. Press any key to close this window... & pause >nul"
+
+timeout /t 1 >nul
 goto CLEAR
 
 :: ------------------------------------------------------------------------
