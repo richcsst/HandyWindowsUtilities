@@ -5,11 +5,11 @@ REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilitie
 REM Distributed under the GNU GPL v 3.0 License
 
 :: ------------------------------------------------------------------------
-:: Check for Administrative Privileges & Set 120x57 Bounds
+:: Check for Administrative Privileges & Set 120x64 Bounds
 :: ------------------------------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=57 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=64 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
     exit /b
 )
 
@@ -58,10 +58,10 @@ set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
 set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
 set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%======================================================================================================================%RESET%"
 
-set "WIN_SETUP=mode con: cols=120 lines=57 & chcp 65001 >nul & cls"
+set "WIN_SETUP=mode con: cols=120 lines=64 & chcp 65001 >nul & cls"
 set "PS_EXEC=powershell -NoProfile -ExecutionPolicy Bypass -Command"
-set "PS_WIN_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 57); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
-set "PS_LIC_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(80, 57); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
+set "PS_WIN_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 64); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
+set "PS_LIC_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(80, 64); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
 set "PS_GET_DRIVERS=$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) };"
 set "WIN_PAUSE=& echo. & echo Press any key to close this window... & pause >nul"
 
@@ -131,15 +131,19 @@ echo.
 echo  %BG_RED%%BRIGHT_YELLOW% Navigation %RESET%
 echo    %BRIGHT_GREEN%L%BRIGHT_WHITE%. View License%RESET%
 echo       Show the GNU GPL v3.0 license text using an interactive pager.
+echo    %BRIGHT_BLUE%M%BRIGHT_WHITE%. Boot to Diagnostic Menu%RESET%
+echo       Restarts Windows into the Advanced Startup / Recovery Environment (%CYAN%shutdown /r /o%RESET%).
+echo    %BRIGHT_BLUE%S%BRIGHT_WHITE%. Boot to BIOS / UEFI%RESET%
+echo       Restarts the machine directly into UEFI/BIOS Firmware Settings (%CYAN%shutdown /r /fw%RESET%).
 echo    %BRIGHT_RED%Q%BRIGHT_WHITE%. Exit%RESET% - Exits the utility.
 echo %DIVIDER%
 
 :: Prompt without newline, then capture keypress immediately (0 is hidden)
-<nul set /p "=%BRIGHT_CYAN% Select an option (1-6, B, C, D, F, G, L, N, T, U, or Q): %RESET%"
-choice /c 123456BCDFGLNTUQ0 /n >nul
+<nul set /p "=%BRIGHT_CYAN% Select an option (1-6, B-D, F, G, L, M, N, S, T, U, or Q): %RESET%"
+choice /c 123456BCDFGLMNSTUQ0 /n >nul
 
 :: Route selection via 1-based choice index
-:: 1=1, 2=2, 3=3, 4=4, 5=5, 6=6, 7=B, 8=C, 9=D, 10=F, 11=G, 12=L, 13=N, 14=T, 15=U, 16=Q, 17=0
+:: 1=1, 2=2, 3=3, 4=4, 5=5, 6=6, 7=B, 8=C, 9=D, 10=F, 11=G, 12=L, 13=M, 14=N, 15=S, 16=T, 17=U, 18=Q, 19=0
 if %errorlevel% equ 1  goto SHOW_SW
 if %errorlevel% equ 2  goto UPD_SPEC_SW
 if %errorlevel% equ 3  goto UPD_ALL_SW
@@ -152,11 +156,13 @@ if %errorlevel% equ 9  goto DISK_CLEANUP
 if %errorlevel% equ 10 goto FIX_WINDOWS
 if %errorlevel% equ 11 goto CREATE_GODMODE
 if %errorlevel% equ 12 goto SHOW_LICENSE
-if %errorlevel% equ 13 goto RESET_NETWORK
-if %errorlevel% equ 14 goto CLEAN_WINSXS
-if %errorlevel% equ 15 goto CLEAR_WU_CACHE
-if %errorlevel% equ 16 goto EXIT
-if %errorlevel% equ 17 goto RELOAD
+if %errorlevel% equ 13 goto BOOT_DIAG
+if %errorlevel% equ 14 goto RESET_NETWORK
+if %errorlevel% equ 15 goto BOOT_BIOS
+if %errorlevel% equ 16 goto CLEAN_WINSXS
+if %errorlevel% equ 17 goto CLEAR_WU_CACHE
+if %errorlevel% equ 18 goto EXIT
+if %errorlevel% equ 19 goto RELOAD
 
 goto CLEAR
 
@@ -322,6 +328,25 @@ start "GNU General Public License v3.0" %PS_EXEC% "%PS_LIC_SETUP% $Host.UI.RawUI
 goto DONE
 
 :: ------------------------------------------------------------------------
+:: Option M: Boot into Windows Diagnostic Menu (WinRE / Advanced Startup)
+:: ------------------------------------------------------------------------
+:BOOT_DIAG
+echo.
+echo %BRIGHT_YELLOW%[!] WARNING: This will immediately restart your computer into the%RESET%
+echo %BRIGHT_YELLOW%    Windows Advanced Startup / Diagnostic Recovery Environment.%RESET%
+echo.
+<nul set /p "=%BRIGHT_CYAN%Are you sure you want to reboot now? [Y/N]: %RESET%"
+choice /c YN /n >nul
+if %errorlevel% equ 2 (
+    echo %YELLOW%Operation cancelled.%RESET%
+    goto DONE
+)
+
+echo %BRIGHT_GREEN%Rebooting system into Diagnostic Menu...%RESET%
+shutdown /r /o /f /t 0
+exit /b
+
+:: ------------------------------------------------------------------------
 :: Option N: Network & DNS Reset
 :: ------------------------------------------------------------------------
 :RESET_NETWORK
@@ -331,6 +356,33 @@ echo %BRIGHT_CYAN%[!] Resetting network stack in a new window...%RESET%
 start "Network Stack Reset" cmd /c "%WIN_SETUP% & echo --- Flushing DNS and Resetting Network Stack --- & echo. & ipconfig /flushdns & echo. & ipconfig /release & echo. & ipconfig /renew & echo. & netsh winsock reset & echo. & echo Network reset complete. (A reboot is recommended if you had connection issues.) %WIN_PAUSE%"
 
 goto DONE
+
+:: ------------------------------------------------------------------------
+:: Option S: Boot directly into BIOS / UEFI Setup
+:: ------------------------------------------------------------------------
+:BOOT_BIOS
+echo.
+echo %BRIGHT_YELLOW%[!] WARNING: This will immediately restart your computer directly%RESET%
+echo %BRIGHT_YELLOW%    into UEFI / BIOS Firmware Settings.%RESET%
+echo.
+<nul set /p "=%BRIGHT_CYAN%Are you sure you want to reboot now? [Y/N]: %RESET%"
+choice /c YN /n >nul
+if %errorlevel% equ 2 (
+    echo %YELLOW%Operation cancelled.%RESET%
+    goto DONE
+)
+
+echo %BRIGHT_GREEN%Initiating firmware reboot...%RESET%
+shutdown /r /fw /f /t 0
+if %errorlevel% neq 0 (
+    echo.
+    echo %BRIGHT_RED%[-] Unable to reboot directly into firmware.%RESET%
+    echo %YELLOW%    Possible reasons: Legacy BIOS (non-UEFI), Fast Boot conflict,%RESET%
+    echo %YELLOW%    or the motherboard does not support OS-directed firmware boot.%RESET%
+    echo.
+    pause
+)
+goto CLEAR
 
 :: ------------------------------------------------------------------------
 :: Option T: Trim WinSxS Component Store
