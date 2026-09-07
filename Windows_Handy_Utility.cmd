@@ -4,8 +4,8 @@ REM Quick Windows 11 Update Utility to update software and drivers without third
 REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
 REM Distributed under the GNU GPL v 3.0 License
 
-set "COLS=160"
-set "ROWS=50"
+set "COLS=156"
+set "ROWS=40"
 
 :: ------------------------------------------------------------------------
 :: Check Administrative Privileges & Elevate into Windows Terminal (wt.exe)
@@ -15,14 +15,14 @@ if %errorLevel% neq 0 (
     powershell -NoProfile -ExecutionPolicy Bypass -Command ^
         "$hasWt = (Get-Command wt.exe -ErrorAction SilentlyContinue) -ne $null; " ^
         "if ($hasWt) { " ^
-        "    Start-Process wt.exe -ArgumentList '--size 160,40 cmd.exe /c \"\"\"%~f0\"\"\"' -Verb RunAs " ^
+        "    Start-Process wt.exe -ArgumentList '--size %COLS%,%ROWS% cmd.exe /c \"\"\"%~f0\"\"\"' -Verb RunAs " ^
         "} else { " ^
-        "    Start-Process cmd.exe -ArgumentList '/c mode con: cols=160 lines=40 & \"\"\"%~f0\"\"\"' -Verb RunAs -WorkingDirectory '%~dp0' " ^
+        "    Start-Process cmd.exe -ArgumentList '/c mode con: cols=%COLS% lines=%ROWS% & \"\"\"%~f0\"\"\"' -Verb RunAs -WorkingDirectory '%~dp0' " ^
         "}"
     exit /b
 )
 
-set "VERSION=2.01"
+set "VERSION=2.02"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -32,47 +32,48 @@ for /f "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1)
 :: Reset
 set "RESET=%ESC%[0m"
 
-:: 8 Standard Foreground Colors (30-37)
-set "BLACK=%ESC%[30m"
-set "RED=%ESC%[31m"
-set "GREEN=%ESC%[32m"
-set "YELLOW=%ESC%[33m"
-set "BLUE=%ESC%[34m"
-set "MAGENTA=%ESC%[35m"
-set "CYAN=%ESC%[36m"
-set "WHITE=%ESC%[37m"
+:: Exact 24-Bit Custom Foreground Colors
+set "BLACK=%ESC%[38;2;0;0;0m"
+set "RED=%ESC%[38;2;197;15;31m"
+set "GREEN=%ESC%[38;2;19;161;14m"
+set "YELLOW=%ESC%[38;2;193;156;0m"
+set "BLUE=%ESC%[38;2;0;55;255m"
+set "MAGENTA=%ESC%[38;2;136;23;152m"
+set "CYAN=%ESC%[38;2;58;150;221m"
+set "WHITE=%ESC%[38;2;204;204;204m"
 
-:: 8 Bright / High-Intensity Foreground Colors (1;30 - 1;37)
-set "BRIGHT_BLACK=%ESC%[1;30m"
-set "BRIGHT_RED=%ESC%[1;31m"
-set "BRIGHT_GREEN=%ESC%[1;32m"
-set "BRIGHT_YELLOW=%ESC%[1;33m"
-set "BRIGHT_BLUE=%ESC%[1;34m"
-set "BRIGHT_MAGENTA=%ESC%[1;35m"
-set "BRIGHT_CYAN=%ESC%[1;36m"
-set "BRIGHT_WHITE=%ESC%[1;37m"
+:: Bright / High-Intensity Foreground
+set "BRIGHT_BLACK=%ESC%[38;2;118;118;118m"
+set "BRIGHT_RED=%ESC%[38;2;231;72;86m"
+set "BRIGHT_GREEN=%ESC%[38;2;22;198;12m"
+set "BRIGHT_YELLOW=%ESC%[38;2;249;241;165m"
+set "BRIGHT_BLUE=%ESC%[38;2;59;120;255m"
+set "BRIGHT_MAGENTA=%ESC%[38;2;180;0;158m"
+set "BRIGHT_CYAN=%ESC%[38;2;97;214;214m"
+set "BRIGHT_WHITE=%ESC%[38;2;242;242;242m"
 
-:: 8 Standard Background Colors (40-47)
-set "BG_BLACK=%ESC%[40m"
-set "BG_RED=%ESC%[41m"
-set "BG_GREEN=%ESC%[42m"
-set "BG_YELLOW=%ESC%[43m"
-set "BG_BLUE=%ESC%[44m"
-set "BG_MAGENTA=%ESC%[45m"
-set "BG_CYAN=%ESC%[46m"
-set "BG_WHITE=%ESC%[47m"
+:: Standard Background Colors
+set "BG_BLACK=%ESC%[48;2;0;0;0m"
+set "BG_RED=%ESC%[48;2;128;0;0m"
+set "BG_GREEN=%ESC%[48;2;19;161;14m"
+set "BG_YELLOW=%ESC%[48;2;193;156;0m"
+set "BG_BLUE=%ESC%[48;2;0;55;218m"
+set "BG_MAGENTA=%ESC%[48;2;136;23;152m"
+set "BG_CYAN=%ESC%[48;2;58;150;221m"
+set "BG_WHITE=%ESC%[48;2;204;204;204m"
 
 set "FLASH=%ESC%[1;3;6m"
+set "UP=%ESC%[A"
 
 :: Underlined Hyperlink & Divider Setup (160 Columns)
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
 set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
-set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=========================================================================================================================================================%RESET%"
+set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%==========================================================================================================================================================%RESET%"
 
-set "WIN_SETUP=mode con: cols=160 lines=40 & chcp 65001 >nul & cls"
+set "WIN_SETUP=mode con: cols=%COLS% lines=%ROWS% & chcp 65001 >nul & cls"
 set "PS_EXEC=powershell -NoProfile -ExecutionPolicy Bypass -Command"
-set "PS_WIN_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=160; $b.Height=120; $r.BufferSize=$b; $w=$r.WindowSize; $w.Width=160; $w.Height=[Math]::Min(40, $r.MaxPhysicalWindowSize.Height); $r.WindowSize=$w; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
-set "PS_LIC_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=80; $b.Height=120; $r.BufferSize=$b; $w=$r.WindowSize; $w.Width=80; $w.Height=[Math]::Min(50, $r.MaxPhysicalWindowSize.Height); $r.WindowSize=$w; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
+set "PS_WIN_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=%COLS%; $b.Height=120; $r.BufferSize=$b; $w=$r.WindowSize; $w.Width=%COLS%; $w.Height=[Math]::Min(%ROWS%, $r.MaxPhysicalWindowSize.Height); $r.WindowSize=$w; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
+set "PS_LIC_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=80; $b.Height=120; $r.BufferSize=$b; $w=$r.WindowSize; $w.Width=80; $w.Height=[Math]::Min(%ROWS%, $r.MaxPhysicalWindowSize.Height); $r.WindowSize=$w; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
 set "PS_GET_DRIVERS=$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) };"
 set "WIN_PAUSE=& echo. & echo Press any key to close this window... & pause >nul"
 
@@ -94,6 +95,7 @@ echo %DIVIDER%
 :: Check if running under Windows Terminal (supports Sixel graphics)
 if defined WT_SESSION (
     call :RENDER_SIXEL_LOGO
+    echo.
 ) else (
     call :RENDER_ANSI_FALLBACK
 )
@@ -159,10 +161,10 @@ if %errorlevel% equ 19 goto RELOAD
 goto CLEAR
 
 :: ------------------------------------------------------------------------
-:: Routine: Render Embedded Graphic Logo via Sixel
+:: Routine: Render Embedded Graphic Logo Centered Horizontally
 :: ------------------------------------------------------------------------
 :RENDER_SIXEL_LOGO
-%PS_EXEC% "$f='%~f0'; $lines=[System.IO.File]::ReadAllLines($f); $s=[array]::IndexOf($lines,'[LOGO_DATA_BEGIN]')+1; $e=[array]::IndexOf($lines,'[LOGO_DATA_END]')-1; for($i=$s; $i -le $e; $i++){ [Console]::Out.WriteLine($lines[$i]) }"
+%PS_EXEC% "$f='%~f0'; $lines=[System.IO.File]::ReadAllLines($f); $s=[array]::IndexOf($lines,'[LOGO_DATA_BEGIN]')+1; $e=[array]::IndexOf($lines,'[LOGO_DATA_END]')-1; $data=($lines[$s..$e] -join [char]10).TrimEnd(\"`r\",\"`n\"); $esc=[char]27; $cr=[char]13; $termWidth=[int]$env:COLS; $imgCharWidth=78; $pad=[Math]::Max(1, [int](($termWidth - $imgCharWidth) / 2) - 6); [Console]::Write($esc + '[' + $pad + 'G' + $data + $esc + '[1A' + $cr)"
 goto :EOF
 
 :: ------------------------------------------------------------------------
