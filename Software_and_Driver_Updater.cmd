@@ -1,19 +1,28 @@
-@echo off
+﻿@echo off
 
 REM Quick Windows 11 Update Utility to update software and drivers without third-party utilities
 REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
 REM Distributed under the GNU GPL v 3.0 License
 
+set "COLS=160"
+set "ROWS=50"
+
 :: ------------------------------------------------------------------------
-:: Check for Administrative Privileges & Set 120x64 Bounds
+:: Check Administrative Privileges & Elevate into Windows Terminal (wt.exe)
 :: ------------------------------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=64 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+        "$hasWt = (Get-Command wt.exe -ErrorAction SilentlyContinue) -ne $null; " ^
+        "if ($hasWt) { " ^
+        "    Start-Process wt.exe -ArgumentList '--size 160,40 cmd.exe /c \"\"\"%~f0\"\"\"' -Verb RunAs " ^
+        "} else { " ^
+        "    Start-Process cmd.exe -ArgumentList '/c mode con: cols=160 lines=40 & \"\"\"%~f0\"\"\"' -Verb RunAs -WorkingDirectory '%~dp0' " ^
+        "}"
     exit /b
 )
 
-set "VERSION=2.00"
+set "VERSION=2.01"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -53,15 +62,17 @@ set "BG_MAGENTA=%ESC%[45m"
 set "BG_CYAN=%ESC%[46m"
 set "BG_WHITE=%ESC%[47m"
 
-:: Underlined Hyperlink & Divider Setup
+set "FLASH=%ESC%[1;3;6m"
+
+:: Underlined Hyperlink & Divider Setup (160 Columns)
 set "REPO_URL=https://github.com/richcsst/HandyWindowsUtilities"
 set "URL_LINK=%BRIGHT_MAGENTA%%REPO_URL%%RESET%"
-set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%======================================================================================================================%RESET%"
+set "DIVIDER=%BG_BLACK%%BRIGHT_BLUE%=========================================================================================================================================================%RESET%"
 
-set "WIN_SETUP=mode con: cols=120 lines=64 & chcp 65001 >nul & cls"
+set "WIN_SETUP=mode con: cols=160 lines=40 & chcp 65001 >nul & cls"
 set "PS_EXEC=powershell -NoProfile -ExecutionPolicy Bypass -Command"
-set "PS_WIN_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(120, 64); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
-set "PS_LIC_SETUP=$Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(80, 64); [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"
+set "PS_WIN_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=160; $b.Height=120; $r.BufferSize=$b; $w=$r.WindowSize; $w.Width=160; $w.Height=[Math]::Min(40, $r.MaxPhysicalWindowSize.Height); $r.WindowSize=$w; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
+set "PS_LIC_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=80; $b.Height=120; $r.BufferSize=$b; $w=$r.WindowSize; $w.Width=80; $w.Height=[Math]::Min(50, $r.MaxPhysicalWindowSize.Height); $r.WindowSize=$w; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
 set "PS_GET_DRIVERS=$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) };"
 set "WIN_PAUSE=& echo. & echo Press any key to close this window... & pause >nul"
 
@@ -75,67 +86,49 @@ chcp 65001 >nul
 cls
 
 :: ------------------------------------------------------------------------
-:: Main Menu Display Loop
+:: Main Menu Display Loop (Dual-Column 160-Wide)
 :: ------------------------------------------------------------------------
 :MENU
 echo %DIVIDER%
-echo %BG_BLACK%  %BRIGHT_BLUE%▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄  %RESET% Yb        dP 88 88b 88 8888b.   dP"Yb  Yb        dP .dP"Y8       .d  dP"Yb     dP   .d   .d
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP   Yb  Yb  db  dP  `Ybo."     .d88 dP   Yb   dP  .d88 .d88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb   dP   YbdPYbdP   o.`Y8b       88 Yb   dP  dP     88   88
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET%    YP  YP    88 88  Y8 8888Y"   YbodP     YP  YP    8bodP'       88  YbodP  dP      88   88
-echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀  %RESET%
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% 88   88 88""Yb 8888b.     db    888888 888888     88   88 888888 88 88     88 888888 Yb  dP
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% 88   88 88__dP  8I  Yb   dPYb     88   88__       88   88   88   88 88     88   88    YbdP
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% Y8   8P 88"""   8I  dY  dP__Yb    88   88""       Y8   8P   88   88 88  .o 88   88     8P
-echo %BG_BLACK%  %BRIGHT_BLUE%█████████ █████████  %RESET% `YbodP' 88     8888Y"  dP""""Yb   88   888888     `YbodP'   88   88 88ood8 88   88    dP
+
+:: Check if running under Windows Terminal (supports Sixel graphics)
+if defined WT_SESSION (
+    call :RENDER_SIXEL_LOGO
+) else (
+    call :RENDER_ANSI_FALLBACK
+)
+
 echo %DIVIDER%
-echo         Written by:  %BRIGHT_YELLOW%Richard Kelsch%RESET%
-echo            Version:  %GREEN%%VERSION%%RESET%
-echo  GitHub Repository:  %URL_LINK%
-echo            License:  %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
+echo          Written by:  %BRIGHT_YELLOW%Richard Kelsch%RESET%                                            GitHub Repository:  %URL_LINK%
+echo             Version:  %GREEN%%VERSION%%RESET%                                                                License:  %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
-echo  %BG_RED%%BRIGHT_YELLOW% Software Management %RESET%
-echo    %BRIGHT_GREEN%1%BRIGHT_WHITE%. Rescan software updates%RESET%
-echo       Runs %CYAN%winget upgrade%RESET% in a separate window to query official repositories and display available updates.
-echo    %BRIGHT_GREEN%2%BRIGHT_WHITE%. Update specific software%RESET%
-echo       Prompts for an ID or name, then runs an exact match targeted upgrade (%CYAN%winget upgrade --id "%RESET%%YELLOW%<Name>%RESET%%CYAN%"%RESET%).
-echo    %BRIGHT_GREEN%3%BRIGHT_WHITE%. Update all software%RESET%
-echo       Launches a child process executing %CYAN%winget upgrade --all --include-unknown%RESET% to update all packages.
+echo  %BG_RED%%BRIGHT_YELLOW% Software Management                                                      %RESET%  %BG_RED%%BRIGHT_YELLOW% System Maintenance                                                         %RESET%
+echo    %BRIGHT_GREEN%1%BRIGHT_WHITE%. Check for software updates%RESET%                                               %BRIGHT_GREEN%B%BRIGHT_WHITE%. Battery Health Report%RESET%
+echo        Scans your installed programs and displays a list of available              Generates a detailed battery health and lifespan report on your
+echo        updates in a separate window.                                               Desktop (laptops only).
+echo    %BRIGHT_GREEN%2%BRIGHT_WHITE%. Update a specific program%RESET%                                                %BRIGHT_GREEN%C%BRIGHT_WHITE%. Clean Temporary Files%RESET%
+echo        Lets you type the name of an installed program to update only               Safely deletes leftover temporary files to free up disk space.
+echo        that item.                                                              %BRIGHT_GREEN%D%BRIGHT_WHITE%. Free Up Disk Space%RESET%
+echo    %BRIGHT_GREEN%3%BRIGHT_WHITE%. Update all programs%RESET%                                                          Opens Windows Disk Cleanup to remove unnecessary system files.
+echo        Downloads and installs available updates for every supported            %BRIGHT_GREEN%F%BRIGHT_WHITE%. Repair Windows System Files%RESET%
+echo        program on your PC.                                                         Scans Windows for corrupt files and automatically repairs them.
+echo                                                                                %BRIGHT_GREEN%G%BRIGHT_WHITE%. Create "God Mode" Folder%RESET%
+echo  %BG_RED%%BRIGHT_YELLOW% Hardware Drivers                                                         %RESET%        Places an all-in-one shortcut folder on your Desktop with every
+echo    %BRIGHT_GREEN%4%BRIGHT_WHITE%. Check for driver updates%RESET%                                                     Windows setting and Control Panel tool.
+echo        Scans Windows Update to see if any hardware devices need new            %BRIGHT_GREEN%N%BRIGHT_WHITE%. Fix Internet ^& Network Problems%RESET%
+echo        drivers.                                                                    Flushes and resets your network connection to resolve connectivity
+echo    %BRIGHT_GREEN%5%BRIGHT_WHITE%. Update a specific driver%RESET%                                                     issues.
+echo        Lets you search for a specific device driver by name and                %BRIGHT_GREEN%T%BRIGHT_WHITE%. Clean Up Old Windows Update Files%RESET%
+echo        installs the match.                                                         Deletes obsolete backup copies of previous Windows updates to
+echo    %BRIGHT_GREEN%6%BRIGHT_WHITE%. Install all driver updates%RESET%                                                   reclaim disk space.
+echo        Downloads and installs all available hardware drivers for your          %BRIGHT_GREEN%U%BRIGHT_WHITE%. Reset Windows Update%RESET%
+echo        computer.                                                                   Clears stuck update downloads and restarts update services.
 echo.
-echo  %BG_RED%%BRIGHT_YELLOW% Driver Management %RESET%
-echo    %BRIGHT_GREEN%4%BRIGHT_WHITE%. Rescan driver updates%RESET%
-echo       Checks to see if any new drivers are available.
-echo    %BRIGHT_GREEN%5%BRIGHT_WHITE%. Update a specific driver%RESET%
-echo       Searches pending Windows drivers by keyword and downloads/installs the first matched update.
-echo    %BRIGHT_GREEN%6%BRIGHT_WHITE%. Update all drivers%RESET%
-echo       Enumerates all pending driver payloads via COM, downloads them sequentially, and triggers installation.
-echo.
-echo  %BG_RED%%BRIGHT_YELLOW% System Maintenance %RESET%
-echo    %BRIGHT_GREEN%B%BRIGHT_WHITE%. Battery Diagnostic Report%RESET%
-echo       Generates and opens an HTML battery capacity and lifecycle wear report (%CYAN%powercfg /batteryreport%RESET%).
-echo    %BRIGHT_GREEN%C%BRIGHT_WHITE%. Clear Temporary Files%RESET%
-echo       Spawns an independent console executing a forced sweep of the current user's %CYAN%%temp%%RESET% directory.
-echo    %BRIGHT_GREEN%D%BRIGHT_WHITE%. Disk Cleanup%RESET%
-echo       Runs %CYAN%cleanmgr /lowdisk /d %SystemDrive%%RESET% for a deep disk cleanup for the Windows system drive.
-echo    %BRIGHT_GREEN%F%BRIGHT_WHITE%. Fix Corrupt Windows Files%RESET%
-echo       Runs %CYAN%DISM /Online /Cleanup-Image /RestoreHealth%RESET% followed by %CYAN%sfc /scannow%RESET% to restore files.
-echo    %BRIGHT_GREEN%G%BRIGHT_WHITE%. Create God Mode Folder%RESET%
-echo       Creates an administrative master control folder on your Desktop.
-echo    %BRIGHT_GREEN%N%BRIGHT_WHITE%. Reset Network and DNS%RESET%
-echo       Flushes DNS resolver cache, releases/renews DHCP leases, and resets the Winsock catalog.
-echo    %BRIGHT_GREEN%T%BRIGHT_WHITE%. Trim WinSxS Component Store%RESET%
-echo       Runs %CYAN%Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase%RESET% to remove superseded components.
-echo    %BRIGHT_GREEN%U%BRIGHT_WHITE%. Flush Windows Update Cache%RESET%
-echo       Stops update services, purges %CYAN%%SystemRoot%\SoftwareDistribution\Download%RESET%, and restarts services.
-echo.
-echo  %BG_RED%%BRIGHT_YELLOW% Navigation %RESET%
-echo    %BRIGHT_GREEN%L%BRIGHT_WHITE%. View License%RESET%
-echo       Show the GNU GPL v3.0 license text using an interactive pager.
-echo    %BRIGHT_BLUE%M%BRIGHT_WHITE%. Boot to Diagnostic Menu%RESET%
-echo       Restarts Windows into the Advanced Startup / Recovery Environment (%CYAN%shutdown /r /o%RESET%).
-echo    %BRIGHT_BLUE%S%BRIGHT_WHITE%. Boot to BIOS / UEFI%RESET%
-echo       Restarts the machine directly into UEFI/BIOS Firmware Settings (%CYAN%shutdown /r /fw%RESET%).
-echo    %BRIGHT_RED%Q%BRIGHT_WHITE%. Exit%RESET% - Exits the utility.
+echo  %BG_RED%%BRIGHT_YELLOW% License ^& Finish                                                         %RESET%  %BG_RED%%BRIGHT_YELLOW% Diagnostics ^& Configuration                                                %RESET%
+echo    %BRIGHT_GREEN%L%BRIGHT_WHITE%. View License Agreement%RESET%                                                   %BRIGHT_BLUE%M%BRIGHT_WHITE%. Restart into Advanced Recovery%RESET%
+echo        Displays the GNU GPL v3.0 license text with an interactive pager.           Reboots your computer into the Windows startup troubleshooting menu.
+echo    %BRIGHT_RED%Q%BRIGHT_WHITE%. Exit Utility%RESET%                                                             %BRIGHT_BLUE%S%BRIGHT_WHITE%. Restart into BIOS / UEFI Settings%RESET%
+echo        Closes the program.                                                         Reboots your computer directly into its motherboard firmware setup.
 echo %DIVIDER%
 
 :: Prompt without newline, then capture keypress immediately (0 is hidden)
@@ -165,6 +158,23 @@ if %errorlevel% equ 18 goto EXIT
 if %errorlevel% equ 19 goto RELOAD
 
 goto CLEAR
+
+:: ------------------------------------------------------------------------
+:: Routine: Render Embedded Graphic Logo via Sixel
+:: ------------------------------------------------------------------------
+:RENDER_SIXEL_LOGO
+%PS_EXEC% "$f='%~f0'; $lines=[System.IO.File]::ReadAllLines($f); $s=[array]::IndexOf($lines,'[LOGO_DATA_BEGIN]')+1; $e=[array]::IndexOf($lines,'[LOGO_DATA_END]')-1; for($i=$s; $i -le $e; $i++){ [Console]::Out.WriteLine($lines[$i]) }"
+goto :EOF
+
+:: ------------------------------------------------------------------------
+:: Routine: Standard ASCII / Figlet Fallback for Classic conhost
+:: ------------------------------------------------------------------------
+:RENDER_ANSI_FALLBACK
+echo %BG_BLACK%  %BRIGHT_BLUE%████ ████  %RESET% Yb        dP 88 88b 88 8888b.   dP"Yb  Yb        dP .dP"Y8       .d  dP"Yb     dP   .d   .d     88   88 888888 88 88     88 888888 Yb  dP
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀ ▀▀▀▀  %RESET%  Yb  db  dP  88 88Yb88  8I  Yb dP   Yb  Yb  db  dP  `Ybo."     .d88 dP   Yb   dP  .d88 .d88     88   88   88   88 88     88   88    YbdP
+echo %BG_BLACK%  %BRIGHT_BLUE%████ ████  %RESET%   YbdPYbdP   88 88 Y88  8I  dY Yb   dP   YbdPYbdP   o.`Y8b       88 Yb   dP  dP     88   88     Y8   8P   88   88 88  .o 88   88     8P
+echo %BG_BLACK%  %BRIGHT_BLUE%▀▀▀▀ ▀▀▀▀  %RESET%    YP  YP    88 88  Y8 8888Y"   YbodP     YP  YP    8bodP'       88  YbodP  dP      88   88     `YbodP'   88   88 88ood8 88   88    dP
+goto :EOF
 
 :: ------------------------------------------------------------------------
 :: Option 0: Reload Script (Development Placeholder)
@@ -202,7 +212,6 @@ echo.
 pause
 echo.
 goto CLEAR
-
 
 :: ------------------------------------------------------------------------
 :: Option 3: Bulk upgrade all software via Winget
@@ -323,7 +332,7 @@ if exist "%GODMODE_PATH%" (
 cls
 echo %BRIGHT_CYAN%[!] Opening GNU GPL v3.0 License in a new window...%RESET%
 
-start "GNU General Public License v3.0" %PS_EXEC% "%PS_LIC_SETUP% $Host.UI.RawUI.WindowTitle='GNU General Public License v3.0'; $e=[char]27; $f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=54; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break}; Write-Host -NoNewline \"$e[1A`r$e[2K\" } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
+start "GNU General Public License v3.0" %PS_EXEC% "%PS_LIC_SETUP% $Host.UI.RawUI.WindowTitle='GNU General Public License v3.0'; $e=[char]27; $f='%~f0'; $l=Get-Content -Path $f; $s=[array]::IndexOf($l,'[GPL_TEXT_BEGIN]')+1; $h=47; $c=0; for($i=$s;$i -lt $l.Length;$i++){ Write-Host $l[$i]; $c++; if($c -eq $h){ $c=0; Write-Host '-- Press ENTER for next page, or Q to quit -- ' -ForegroundColor Yellow -NoNewline; $ans=Read-Host; if($ans -match '^q'){break}; Write-Host -NoNewline \"$e[1A`r$e[2K\" } }; Write-Host '`nLicense viewer finished. Press ENTER to close window...' -ForegroundColor Cyan; $null=Read-Host"
 
 goto DONE
 
@@ -332,8 +341,11 @@ goto DONE
 :: ------------------------------------------------------------------------
 :BOOT_DIAG
 echo.
+echo.
 echo %BRIGHT_YELLOW%[!] WARNING: This will immediately restart your computer into the%RESET%
 echo %BRIGHT_YELLOW%    Windows Advanced Startup / Diagnostic Recovery Environment.%RESET%
+echo.
+echo %BRIGHT_RED%%FLASH%    Make sure you have saved your work before proceeding!%RESET%
 echo.
 <nul set /p "=%BRIGHT_CYAN%Are you sure you want to reboot now? [Y/N]: %RESET%"
 choice /c YN /n >nul
@@ -362,8 +374,11 @@ goto DONE
 :: ------------------------------------------------------------------------
 :BOOT_BIOS
 echo.
+echo.
 echo %BRIGHT_YELLOW%[!] WARNING: This will immediately restart your computer directly%RESET%
 echo %BRIGHT_YELLOW%    into UEFI / BIOS Firmware Settings.%RESET%
+echo.
+echo %BRIGHT_RED%%FLASH%    Make sure you have saved your work before proceeding!%RESET%
 echo.
 <nul set /p "=%BRIGHT_CYAN%Are you sure you want to reboot now? [Y/N]: %RESET%"
 choice /c YN /n >nul
@@ -421,6 +436,11 @@ exit /b
 :DONE
 timeout /t 1 >nul
 goto CLEAR
+
+:: DO NOT DELETE OR EDIT THIS LINE - MARKER FOR GRAPHIC LOGO
+[LOGO_DATA_BEGIN]
+
+[LOGO_DATA_END]
 
 :: DO NOT DELETE OR EDIT THIS LINE - MARKER FOR LICENSE PARSER
 [GPL_TEXT_BEGIN]
