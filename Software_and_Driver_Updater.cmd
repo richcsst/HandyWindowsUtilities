@@ -5,15 +5,15 @@ REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilitie
 REM Distributed under the GNU GPL v 3.0 License
 
 :: ------------------------------------------------------------------------
-:: Check for Administrative Privileges & Set 120x50 Bounds
+:: Check for Administrative Privileges & Set 120x30 Bounds
 :: ------------------------------------------------------------------------
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=50 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList '/c mode con: cols=120 lines=30 & \"%~f0\"' -Verb RunAs -WorkingDirectory '%~dp0'"
     exit /b
 )
 
-set "VERSION=1.04"
+set "VERSION=1.05"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -87,15 +87,16 @@ echo            Version:  %GREEN%%VERSION%%RESET%
 echo  GitHub Repository:  %URL_LINK%
 echo            License:  %BRIGHT_WHITE%GNU General Public License v3.0%RESET%
 echo %DIVIDER%
-echo    %BG_RED%%BRIGHT_YELLOW%              Software Management                 %RESET%     %BG_RED%%BRIGHT_YELLOW%               Driver Management                  %RESET%
+echo    %BG_RED%%BRIGHT_YELLOW%                Software Management                   %RESET% %BG_RED%%BRIGHT_YELLOW%                   Driver Management                      %RESET%
 echo      %BRIGHT_WHITE%1.%RESET% Rescan software updates %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%4.%RESET% Rescan driver updates %BRIGHT_BLACK%(opens new window)%RESET%
 echo      %BRIGHT_WHITE%2.%RESET% Update specific software %BRIGHT_BLACK%(prompt for name)%RESET%          %BRIGHT_WHITE%5.%RESET% Update a specific driver %BRIGHT_BLACK%(prompt for name)%RESET%
 echo      %BRIGHT_WHITE%3.%RESET% Update all software %BRIGHT_BLACK%(opens new window)%RESET%              %BRIGHT_WHITE%6.%RESET% Update all drivers %BRIGHT_BLACK%(opens new window)%RESET%
 echo.
-echo    %BG_RED%%BRIGHT_YELLOW%                                                 System                                                  %RESET%
+echo    %BG_RED%%BRIGHT_YELLOW%                                                     System                                                       %RESET%
 echo      %BRIGHT_WHITE%7.%RESET% View License (GPL v3.0) %BRIGHT_BLACK%(opens new window)%RESET%          %BRIGHT_WHITE%9.%RESET% Create God Mode Folder on Desktop
 echo      %BRIGHT_WHITE%8.%RESET% Fix Corrupt Windows Files %BRIGHT_BLACK%(opens new window)%RESET%        %BRIGHT_WHITE%C.%RESET% Clear Temporary Files %BRIGHT_BLACK%(opens new window)%RESET%
-echo      %BRIGHT_WHITE%Q.%RESET% Exit
+echo      %BRIGHT_WHITE%D.%RESET% Disk Cleanup %BRIGHT_BLACK%(opens new window)%RESET%                     %BRIGHT_WHITE%N.%RESET% Reset Network and Clear DNS cache %BRIGHT_BLACK%(opens new window)%RESET%
+echo      %BRIGHT_WHITE%U.%RESET% Flush Windows Update Cache %BRIGHT_BLACK%(opens new window)%RESET%       %BRIGHT_WHITE%Q.%RESET% Exit
 echo %DIVIDER%
 set /p choice="%BRIGHT_CYAN% Select an option (1-9, C or Q): %RESET%"
 
@@ -109,7 +110,12 @@ if "%choice%"=="6" goto UPD_ALL_DRV
 if "%choice%"=="7" goto SHOW_LICENSE
 if "%choice%"=="8" goto FIX_WINDOWS
 if "%choice%"=="9" goto CREATE_GODMODE
+if /i "%choice%"=="b" goto BATTERY_REPORT
 if /i "%choice%"=="c" goto CL_TEMP
+if /i "%choice%"=="d" goto DISK_CLEANUP
+if /i "%choice%"=="n" goto RESET_NETWORK
+if /i "%choice%"=="u" goto CLEAR_WU_CACHE
+if /i "%choice%"=="w" goto CLEAN_WINSXS
 if /i "%choice%"=="q" goto EXIT
 if /i "%choice%"=="x" goto EXIT
 if "%choice%"=="0" goto RELOAD
@@ -263,6 +269,24 @@ echo.
 pause
 goto CLEAR
 
+:: ------------------------------------------------------------------------
+:: Option B: Generate Battery Health Report
+:: ------------------------------------------------------------------------
+:BATTERY_REPORT
+echo.
+echo %BRIGHT_CYAN%[!] Generating battery diagnostic report...%RESET%
+
+powercfg /batteryreport /output "%USERPROFILE%\Desktop\battery-report.html" >nul 2>&1
+if %errorlevel% equ 0 (
+    echo %GREEN%[+] Battery report generated successfully on your Desktop!%RESET%
+    start "" "%USERPROFILE%\Desktop\battery-report.html"
+) else (
+    echo %BRIGHT_RED%[-] Unable to generate battery report (Desktop system or no battery present).%RESET%
+)
+
+echo.
+pause
+goto CLEAR
 
 :: ------------------------------------------------------------------------
 :: Option C: Clear Temp files
@@ -272,6 +296,54 @@ echo.
 echo %BRIGHT_CYAN%[!] Opening Temporary File Cleaner in a new window...%RESET%
 
 start "Clear Temporary Files" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Clearing Temporary Files --- & echo. & echo (File-in-use errors are normal and can be safely ignored) & echo. & del /q /f /s "%temp%\*" & echo. & echo Temporary cleanup completed. Press any key to close this window... & pause >nul"
+
+timeout /t 1 >nul
+goto CLEAR
+
+:: ------------------------------------------------------------------------
+:: Option D: Windows Deep Disk Cleanup
+:: ------------------------------------------------------------------------
+:DISK_CLEANUP
+echo.
+echo %BRIGHT_CYAN%[!] Spawning Windows Disk Cleanup...%RESET%
+
+start "Windows Disk Cleanup" cleanmgr /lowdisk /d %SystemDrive%
+
+timeout /t 1 >nul
+goto CLEAR
+
+:: ------------------------------------------------------------------------
+:: Option N: Network & DNS Reset
+:: ------------------------------------------------------------------------
+:RESET_NETWORK
+echo.
+echo %BRIGHT_CYAN%[!] Resetting network stack in a new window...%RESET%
+
+start "Network Stack Reset" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Flushing DNS and Resetting Network Stack --- & echo. & ipconfig /flushdns & echo. & ipconfig /release & echo. & ipconfig /renew & echo. & netsh winsock reset & echo. & echo Network reset complete. (A reboot is recommended if you had connection issues.) & echo. & echo Press any key to close this window... & pause >nul"
+
+timeout /t 1 >nul
+goto CLEAR
+
+:: ------------------------------------------------------------------------
+:: Option U: Flush Windows Update Cache
+:: ------------------------------------------------------------------------
+:CLEAR_WU_CACHE
+echo.
+echo %BRIGHT_CYAN%[!] Resetting Windows Update cache in a new window...%RESET%
+
+start "Flush Windows Update Cache" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Stopping Update Services --- & echo. & net stop wuauserv & net stop bits & echo. & echo --- Purging Update Download Staging Area --- & del /q /f /s "%SystemRoot%\SoftwareDistribution\Download\*" & echo. & echo --- Restarting Update Services --- & net start bits & net start wuauserv & echo. & echo Windows Update download cache cleared. & echo. & echo Press any key to close this window... & pause >nul"
+
+timeout /t 1 >nul
+goto CLEAR
+
+:: ------------------------------------------------------------------------
+:: Option W: Trim WinSxS Component Store
+:: ------------------------------------------------------------------------
+:CLEAN_WINSXS
+echo.
+echo %BRIGHT_CYAN%[!] Trimming superseded components in a new window...%RESET%
+
+start "WinSxS Base Reset" cmd /c "mode con: cols=120 lines=50 & chcp 65001 >nul & cls & echo --- Trimming Superseded Windows Components (WinSxS) --- & echo. & echo (Note: This prevents rolling back previously installed updates) & echo. & Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase & echo. & echo Cleanup finished. Press any key to close this window... & pause >nul"
 
 timeout /t 1 >nul
 goto CLEAR
