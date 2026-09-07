@@ -269,7 +269,7 @@ goto CLEAR
 :: ------------------------------------------------------------------------
 :CL_TEMP
 
-start "echo. & echo %BRIGHT_CYAN%[!] Clearing temporary data...%RESET%" cmd /c "Del /q /f /s %temp%\* & echo. & echo Press any key to close this window... & pause >nul"
+start "echo. & echo %BRIGHT_CYAN%[!] Clearing temporary data (ignore any errors)...%RESET%" cmd /c "Del /q /f /s %temp%\* & echo. & echo Press any key to close this window... & pause >nul"
 goto CLEAR
 
 :: ------------------------------------------------------------------------
