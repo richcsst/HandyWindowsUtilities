@@ -13,7 +13,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=1.05"
+set "VERSION=2.00"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
