@@ -76,6 +76,7 @@ set "PS_WIN_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=%COLS%; $b.Heigh
 set "PS_LIC_SETUP=$r=$Host.UI.RawUI; $b=$r.BufferSize; $b.Width=80; $b.Height=120; $r.BufferSize=$b; $w=$r.WindowSize; $w.Width=80; $w.Height=[Math]::Min(%ROWS%, $r.MaxPhysicalWindowSize.Height); $r.WindowSize=$w; [Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
 set "PS_GET_DRIVERS=$s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $drv=$res.Updates | Where-Object { $_.Type -eq 2 -or ($_.Categories | Where-Object { $_.Name -like '*Driver*' }) };"
 set "WIN_PAUSE=& echo. & echo Press any key to close this window... & pause >nul"
+set "GODMODE_PATH=%USERPROFILE%\Desktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}"
 
 title Windows 10/11 Software ^& Driver Updater
 
@@ -313,8 +314,6 @@ goto DONE
 echo.
 echo %BRIGHT_CYAN%[!] Creating God Mode folder on Desktop...%RESET%
 
-set "GODMODE_PATH=%USERPROFILE%\Desktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}"
-
 if exist "%GODMODE_PATH%" (
     echo %BRIGHT_YELLOW%[!] God Mode folder already exists on your Desktop.%RESET%
 ) else (
@@ -325,6 +324,8 @@ if exist "%GODMODE_PATH%" (
         echo %BRIGHT_RED%[-] Failed to create God Mode folder.%RESET%
     )
 )
+
+goto DONE
 
 :: ------------------------------------------------------------------------
 :: Option L: Display License in Separate Window (Paginated)
@@ -358,6 +359,8 @@ if %errorlevel% equ 2 (
 echo %BRIGHT_GREEN%Rebooting system into Diagnostic Menu...%RESET%
 shutdown /r /o /f /t 0
 exit /b
+
+goto CLEAR
 
 :: ------------------------------------------------------------------------
 :: Option N: Network & DNS Reset
