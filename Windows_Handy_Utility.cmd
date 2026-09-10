@@ -2,7 +2,7 @@
 
 REM Quick Windows 11 Update Utility to update software and drivers without third-party utilities
 REM Written by Richard Kelsch - https://github.com/richcsst/HandyWindowsUtilities
-REM Distributed under the GNU GPL v 3.0 License
+REM Copyright 2026 Richard Kelsch - Distributed under the GNU GPL v 3.0 License
 
 set "COLS=156"
 set "ROWS=40"
@@ -22,7 +22,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=2.02"
+set "VERSION=2.03"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
