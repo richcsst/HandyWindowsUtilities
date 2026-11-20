@@ -22,7 +22,7 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-set "VERSION=2.03"
+set "VERSION=2.04"
 
 :: ------------------------------------------------------------------------
 :: ANSI Escape Initialization (MUST RUN BEFORE CHCP 65001)
@@ -246,7 +246,7 @@ set /p drvName="%BRIGHT_CYAN%Enter the name or keyword of the driver to update: 
 if "%drvName%"=="" goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Searching and installing matching driver update via Windows Update...%RESET%
-powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $d='%drvName%'; $s=New-Object -ComObject 'Microsoft.Update.Session'; $res=$s.CreateUpdateSearcher().Search('IsInstalled=0'); $target=$res.Updates | Where-Object { $_.Title -like '*' + $d + '*' }; if ($target) { Write-Host 'Driver found. Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; $u.Add($target[0])|Out-Null; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $i.Install(); Write-Host 'Done!' -ForegroundColor Green } else { Write-Host 'No matching driver updates found.' -ForegroundColor Red }"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $d='%drvName%'; %PS_GET_DRIVERS% $target=@($drv | Where-Object { $_.Title -like '*' + $d + '*' }); if ($target.Count -gt 0) { Write-Host ('Driver found: ' + $target[0].Title) -ForegroundColor Cyan; Write-Host 'Downloading...' -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; $null=$u.Add($target[0]); $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $resInst=$i.Install(); Write-Host ('Installation Result Code: ' + $resInst.ResultCode) -ForegroundColor Green; if ($resInst.RebootRequired) { Write-Host '[!] A system reboot is required to complete driver installation.' -ForegroundColor Red } else { Write-Host '[+] No reboot required.' -ForegroundColor Green } } else { Write-Host 'No matching driver updates found.' -ForegroundColor Red }"
 echo.
 pause
 echo.
@@ -259,7 +259,7 @@ goto CLEAR
 echo.
 echo %BRIGHT_CYAN%[!] Launching bulk driver update in a new window...%RESET%
 
-start "Windows Driver Updates - Installation" %PS_EXEC% "%PS_WIN_SETUP% Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; %PS_GET_DRIVERS% if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { ... }; Write-Host ''; Write-Host 'Process finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
+start "Windows Driver Updates - Installation" %PS_EXEC% "%PS_WIN_SETUP% Write-Host '--- Scanning Windows Update for pending drivers ---' -ForegroundColor Cyan; Write-Host ''; %PS_GET_DRIVERS% if (-not $drv) { Write-Host 'No driver updates available.' -ForegroundColor Green } else { Write-Host ('Found ' + @($drv).Count + ' driver update(s). Downloading...') -ForegroundColor Yellow; $u=New-Object -ComObject 'Microsoft.Update.UpdateColl'; foreach ($item in @($drv)) { $null=$u.Add($item) }; $dl=$s.CreateUpdateDownloader(); $dl.Updates=$u; $dl.Download(); Write-Host 'Installing driver updates...' -ForegroundColor Yellow; $i=$s.CreateUpdateInstaller(); $i.Updates=$u; $resInst=$i.Install(); Write-Host ('Installation Result Code: ' + $resInst.ResultCode) -ForegroundColor Green; if ($resInst.RebootRequired) { Write-Host '[!] A system reboot is required to complete driver installation.' -ForegroundColor Red } else { Write-Host '[+] No reboot required.' -ForegroundColor Green } }; Write-Host ''; Write-Host 'Process finished. Press ENTER to close window...' -ForegroundColor Yellow; $null=Read-Host"
 
 goto DONE
 
